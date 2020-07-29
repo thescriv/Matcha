@@ -1,0 +1,62 @@
+// Jest Snapshot v1, https://goo.gl/fbAQLP
+
+exports[`login --  POST /login do login 1`] = `
+Object {
+  "body": Object {},
+  "status": 204,
+}
+`;
+
+exports[`login --  POST /login do not login (failed to create token) 1`] = `
+Object {
+  "body": Object {
+    "error": "api.login token failed_to_generate_token",
+  },
+  "status": 400,
+}
+`;
+
+exports[`login --  POST /login do not login (nickname is null) 1`] = `
+Object {
+  "body": Object {
+    "error": "api.login nickname is_not_valid",
+  },
+  "status": 400,
+}
+`;
+
+exports[`login --  POST /login do not login (password is null) 1`] = `
+Object {
+  "body": Object {
+    "error": "api.login password is_not_valid",
+  },
+  "status": 400,
+}
+`;
+
+exports[`login --  POST /login do not login (password is wrong) 1`] = `
+Object {
+  "body": Object {
+    "error": "api.login password is_not_valid",
+  },
+  "status": 400,
+}
+`;
+
+exports[`login --  POST /login do not login (token fail to sign) 1`] = `
+Object {
+  "body": Object {
+    "error": "api.generateWT token cannot_be_generated",
+  },
+  "status": 400,
+}
+`;
+
+exports[`login --  POST /login do not login (user does not exist) 1`] = `
+Object {
+  "body": Object {
+    "error": "api.login user does_not_exist",
+  },
+  "status": 400,
+}
+`;

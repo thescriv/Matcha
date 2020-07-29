@@ -1,0 +1,189 @@
+// Jest Snapshot v1, https://goo.gl/fbAQLP
+
+exports[`profile --  GET /profile/logout do logout 1`] = `
+Object {
+  "body": Object {},
+  "status": 204,
+}
+`;
+
+exports[`profile --  GET /profile/logout do not logout (jwt.logout throw) 1`] = `
+Object {
+  "body": Object {
+    "error": "api.generateWT token cannot_be_generated",
+  },
+  "status": 400,
+}
+`;
+
+exports[`profile --  GET /profile/me do get me 1`] = `
+Object {
+  "body": Object {
+    "profileInfo": Object {
+      "bio": null,
+      "completed": 0,
+      "email": "test@test.test",
+      "firstname": "theo",
+      "gender_id": null,
+      "id": 1,
+      "lastname": "test",
+      "nickname": null,
+      "orientation_id": 1,
+      "password": "f94b937b40c946b916c63a1b638ee956",
+      "score": 100,
+      "verified": 0,
+    },
+  },
+  "status": 200,
+}
+`;
+
+exports[`profile --  GET /profile/me do not get me (user does not exist) 1`] = `
+Object {
+  "body": Object {
+    "error": "api.profile user does_not_exist",
+  },
+  "status": 400,
+}
+`;
+
+exports[`profile --  POST /profile/update do not update profile (no token send) 1`] = `
+Object {
+  "body": Object {},
+  "status": 401,
+}
+`;
+
+exports[`profile --  POST /profile/update do not update profile (no token send) 2`] = `
+Array [
+  RowDataPacket {
+    "bio": null,
+    "completed": 0,
+    "email": "test@test.test",
+    "firstname": "theo",
+    "gender_id": null,
+    "id": 1,
+    "lastname": "test",
+    "nickname": "thescriv",
+    "orientation_id": 1,
+    "password": "f94b937b40c946b916c63a1b638ee956",
+    "score": 100,
+    "verified": 1,
+  },
+]
+`;
+
+exports[`profile --  POST /profile/update do not update profile (user does not exist) 1`] = `
+Object {
+  "body": Object {
+    "error": "api.updateProfile user does_not_exist",
+  },
+  "status": 400,
+}
+`;
+
+exports[`profile --  POST /profile/update do not update profile (user does not exist) 2`] = `Array []`;
+
+exports[`profile --  POST /profile/update do update profile (password modified) 1`] = `
+Object {
+  "body": Object {},
+  "status": 204,
+}
+`;
+
+exports[`profile --  POST /profile/update do update profile (password modified) 2`] = `
+Array [
+  RowDataPacket {
+    "bio": null,
+    "completed": 1,
+    "email": "test@test.test",
+    "firstname": "Jack",
+    "gender_id": null,
+    "id": 1,
+    "lastname": "test",
+    "nickname": "thescriv",
+    "orientation_id": 1,
+    "password": "a720c6b5fc70c9bdfc257736b3140108",
+    "score": 100,
+    "verified": 1,
+  },
+]
+`;
+
+exports[`profile --  POST /profile/update do update profile 1`] = `
+Object {
+  "body": Object {},
+  "status": 204,
+}
+`;
+
+exports[`profile --  POST /profile/update do update profile 2`] = `
+Array [
+  RowDataPacket {
+    "bio": null,
+    "completed": 1,
+    "email": "test@test.test",
+    "firstname": "Jack",
+    "gender_id": null,
+    "id": 1,
+    "lastname": "test",
+    "nickname": "thescriv",
+    "orientation_id": 1,
+    "password": "f94b937b40c946b916c63a1b638ee956",
+    "score": 100,
+    "verified": 1,
+  },
+]
+`;
+
+exports[`profile --  auth do not auth (no logged in token) 1`] = `
+Object {
+  "body": Object {
+    "err": "api.generateWT token user_is_not_logged",
+  },
+  "status": 400,
+}
+`;
+
+exports[`profile --  auth do not auth (no token) 1`] = `
+Object {
+  "body": Object {},
+  "status": 401,
+}
+`;
+
+exports[`profile --  auth do not auth (no user_id in token) 1`] = `
+Object {
+  "body": Object {
+    "err": "auth token unknow_token",
+  },
+  "status": 401,
+}
+`;
+
+exports[`profile --  auth do not auth (token cannot be verified) 1`] = `
+Object {
+  "body": Object {
+    "err": "api.generateWT token cannot_be_verified",
+  },
+  "status": 400,
+}
+`;
+
+exports[`profile --  auth do not auth (user is not logged) 1`] = `
+Object {
+  "body": Object {
+    "err": "api.generateWT token user_is_not_logged",
+  },
+  "status": 400,
+}
+`;
+
+exports[`profile --  auth do not auth (user is not logged) 2`] = `
+Object {
+  "body": Object {
+    "err": "api.generateWT token user_is_not_logged",
+  },
+  "status": 400,
+}
+`;

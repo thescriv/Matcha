@@ -1,0 +1,35 @@
+// Jest Snapshot v1, https://goo.gl/fbAQLP
+
+exports[`lib --  db --  db query fail 1`] = `[Error: ERROR MYSQL]`;
+
+exports[`lib --  db --  faild to create table 1`] = `[Error: ERROR MYSQL]`;
+
+exports[`lib --  db --  failed to connect to database 1`] = `[Error: Error: ERROR MYSQL]`;
+
+exports[`lib --  getRandomToken -- do get a randomToken (token already exist) 1`] = `"0000000000000000000000000000000000000002"`;
+
+exports[`lib --  getRandomToken -- do get a randomToken 1`] = `"0000000000000000000000000000000000000001"`;
+
+exports[`lib --  jwt -- logout --  do logout 1`] = `"eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJhdXRoIjpbXSwibG9nZ2VkIjpmYWxzZSwiaWF0IjoxNTkxNTY0NDYxfQ.GjF42FOjyyfdhCTx8C-QTawgvHow4hlvlOBW6MBml9s"`;
+
+exports[`lib --  jwt -- logout --  do not logout (failed to create token) 1`] = `"api.generateWT token cannot_be_generated"`;
+
+exports[`lib --  jwt -- logout --  do not logout (id is null) 1`] = `"api.generateWT user_id is_null"`;
+
+exports[`lib --  jwt -- sign --  do create token 1`] = `"eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJhdXRoIjpbInVzZXIiXSwidXNlcl9pZCI6IjEiLCJsb2dnZWQiOnRydWUsImlhdCI6MTU5MTU2NDQ2MSwiZXhwIjoxNTkxNTY4MDYxfQ.BZXuNFe2TxzakOGjA9To_JQcAoUb32oJkyYp9--7Zm0"`;
+
+exports[`lib --  jwt -- sign --  do not create token (no id provided) 1`] = `"api.generateWT user_id is_null"`;
+
+exports[`lib --  jwt -- sign --  do not create token (token craetion failed) 1`] = `"jwt.sign is not a function"`;
+
+exports[`lib --  jwt -- verify --  do not verify token (no token provided) 1`] = `"api.generateWT token is_null"`;
+
+exports[`lib --  jwt -- verify --  do not verify token (token cannot be verified) 1`] = `"api.generateWT token content_is_null"`;
+
+exports[`lib --  jwt -- verify --  do not verify token (token logged is false) 1`] = `"api.generateWT token user_is_not_logged"`;
+
+exports[`lib --  jwt -- verify --  do verify token 1`] = `"eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJhdXRoIjpbInVzZXIiXSwidXNlcl9pZCI6IjEiLCJsb2dnZWQiOnRydWUsImlhdCI6MTU5MTU2NDQ2MSwiZXhwIjoxNTkxNTY4MDYxfQ.BZXuNFe2TxzakOGjA9To_JQcAoUb32oJkyYp9--7Zm0"`;
+
+exports[`lib --  validator -- do not validate (arrayValidator is empty) 1`] = `"validation Array cannot be empty"`;
+
+exports[`lib --  validator -- do not validate (element array is empty) 1`] = `"array is empty"`;
