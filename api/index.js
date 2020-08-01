@@ -1,12 +1,15 @@
 const { startApi, stopApi } = require('./api')
 const { script } = require('./scripts/script')
 
+const config = require('./config')
+
 async function start() {
   console.log('starting api')
 
-  await script('matcha')
+  await script(config.DB_NAME)
 
-  await startApi(3001)
+  await startApi(config.PORT)
+  
 }
 
 async function stop() {

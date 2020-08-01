@@ -4,7 +4,7 @@ const crypto = require('crypto')
 
 const db = require('../src/lib/db')
 const jwt = require('../src/lib/webToken')
-const config = require('../../../config')
+const config = require('../config')
 
 const { script } = require('../scripts/script')
 const { deleteRows } = require('./utils/deleteRows')
@@ -12,6 +12,8 @@ const { getRandomPort } = require('./utils/getRandomPort')
 const { startApi, stopApi } = require('../api')
 
 let baseUrl
+let token
+let userId
 
 describe(`profile -- `, () => {
   beforeAll(async () => {
@@ -24,6 +26,17 @@ describe(`profile -- `, () => {
     await deleteRows()
 
     await startApi(port)
+  })
+
+  beforeEach(async () => {
+    const insertedUser = await db.query(
+      `INSERT INTO user (nickname, firstname, lastname, email, password) 
+              VALUES ("thescriv", "theo", "test", "test@test.test", "abc")`
+    )
+
+    userId = insertedUser.insertId
+
+    token = jwt.generate(userId)
   })
 
   afterEach(async () => {
@@ -145,12 +158,6 @@ describe(`profile -- `, () => {
 
   describe('GET /profile/me', () => {
     test('do get me', async () => {
-      const insertedUser = await db.query(
-        `INSERT INTO user (firstname, lastname, email, password) 
-              VALUES ("theo", "test", "test@test.test", "f94b937b40c946b916c63a1b638ee956")`
-      )
-
-      const token = jwt.generate(insertedUser.insertId)
 
       const { body, status } = await superagent
         .get(`${baseUrl}/profile/me`)
@@ -160,14 +167,14 @@ describe(`profile -- `, () => {
     })
 
     test('do not get me (user does not exist)', async () => {
-      const token = jwt.generate('1')
+      const tokenWithUnknownUser = jwt.generate('99')
 
       let error
 
       try {
         await superagent
           .get(`${baseUrl}/profile/me`)
-          .set('Authorization', `Bearer ${token}`)
+          .set('Authorization', `Bearer ${tokenWithUnknownUser}`)
       } catch (err) {
         error = err
       }
@@ -180,8 +187,6 @@ describe(`profile -- `, () => {
 
   describe('GET /profile/logout', () => {
     test('do logout', async () => {
-      const token = jwt.generate('1')
-
       const { body, status } = await superagent
         .get(`${baseUrl}/profile/logout`)
         .set('Authorization', `Bearer ${token}`)
@@ -193,7 +198,6 @@ describe(`profile -- `, () => {
       jest.spyOn(jwt, 'logout').mockImplementation(() => {
         throw new Error('api.generateWT token cannot_be_generated')
       })
-      const token = jwt.generate('1')
 
       try {
         await superagent
@@ -209,22 +213,8 @@ describe(`profile -- `, () => {
   })
 
   describe('POST /profile/update', () => {
-    let token
-
-    let userId
-
-    beforeEach(async () => {
-      const insertedUser = await db.query(
-        `INSERT INTO user (nickname, firstname, lastname, email, password, verified) 
-              VALUES ("thescriv", "theo", "test", "test@test.test", "f94b937b40c946b916c63a1b638ee956", true)`
-      )
-
-      userId = insertedUser.insertId
-
-      token = jwt.generate(userId)
-    })
-
     test('do update profile', async () => {
+
       const { body, status } = await superagent
         .post(`${baseUrl}/profile/update`)
         .set('Authorization', `Bearer ${token}`)
@@ -245,24 +235,6 @@ describe(`profile -- `, () => {
         .post(`${baseUrl}/profile/update`)
         .set('Authorization', `Bearer ${token}`)
         .send({ firstname: 'Jack', password: 'Thescriv1' })
-
-      expect({ body, status }).toMatchSnapshot()
-
-      const user = await db.query('SELECT * FROM user')
-      expect(user).toMatchSnapshot()
-    })
-
-    test('do not update profile (no token send)', async () => {
-      let error
-
-      try {
-        await superagent
-          .post(`${baseUrl}/profile/update`)
-          .send({ firstname: 'Jack' })
-      } catch (err) {
-        error = err
-      }
-      const { body, status } = error.response
 
       expect({ body, status }).toMatchSnapshot()
 

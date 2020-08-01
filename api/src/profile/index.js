@@ -10,7 +10,7 @@ const routerProfile = express.Router()
 let userId = null
 let visitId = null
 
-routerProfile.use('/', async (req, res, next) => {
+routerProfile.use('/', (req, res, next) => {
   const authHeader = req.headers.authorization
 
   if (!authHeader) {
@@ -26,17 +26,9 @@ routerProfile.use('/', async (req, res, next) => {
       res.status(401).send({ err: 'auth token unknow_token' })
     }
 
-    const user = await db.query(`SELECT id FROM user WHERE ?`, [
-      { id: tokenInfo.user_id },
-    ])
-
-    if (!user.length) {
-      throw new Error('api.profile user does_not_exist')
-    }
-
     userId = tokenInfo.user_id
   } catch (error) {
-    res.status(400).send({ err: error.message })
+    res.status(400).send({ error: error.message })
   }
 
   next()
@@ -48,7 +40,7 @@ routerProfile.get('/me', async (_req, res) => {
 
     res.status(200).send({ profileInfo })
   } catch (err) {
-    console.error(err)
+    console.error(err.message)
     res.status(400).send({ error: err.message })
   }
 })
@@ -61,7 +53,7 @@ routerProfile.post('/update', async (req, res) => {
 
     res.sendStatus(204)
   } catch (err) {
-    console.error(err)
+    console.error(err.message)
     res.status(400).send({ error: err.message })
   }
 })
@@ -74,7 +66,7 @@ routerProfile.get('/logout', async (_req, res) => {
 
     res.sendStatus(204)
   } catch (err) {
-    console.error(err)
+    console.error(err.message)
     res.status(400).send({ error: err.message })
   }
 })
@@ -95,7 +87,7 @@ routerProfile.use('/:visit_id', async (req, res, next) => {
   ])
 
   if (!visitUserExist.length) {
-    res.status(401).send({ err: 'user does not exist' })
+    res.status(400).send({ err: 'user does not exist' })
   }
 
   //userIsBlocked ?
@@ -109,7 +101,7 @@ routerProfile.post('/:visit_id', async (_req, res) => {
 
     res.sendStatus(204)
   } catch (err) {
-    console.error(err)
+    console.error(err.message)
     res.status(400).send({ error: err.message })
   }
 })
@@ -120,7 +112,7 @@ routerProfile.post('/:visit_id/like', async (_req, res) => {
 
     res.sendStatus(204)
   } catch (err) {
-    console.error(err)
+    console.error(err.message)
     res.status(400).send({ error: err.message })
   }
 })

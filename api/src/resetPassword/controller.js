@@ -1,7 +1,7 @@
 const crypto = require('crypto')
 
 const db = require('../lib/db')
-const config = require('../../../../config')
+const config = require('../../config')
 
 const { transporter } = require('../lib/transporter')
 const { getRandomToken } = require('../lib/getRandomToken')

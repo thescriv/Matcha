@@ -2,7 +2,10 @@ const db = require('../lib/db')
 
 const crypto = require('crypto')
 
-const { validationUpdateProfile } = require('./schema')
+const {
+  validationUpdateProfile,
+  validationInputUpdateProfile,
+} = require('./schema')
 
 async function getProfile(userId) {
   const user = await db.query(`SELECT * FROM user WHERE ?`, [{ id: userId }])
@@ -15,7 +18,9 @@ async function getProfile(userId) {
 }
 
 async function updateProfile(userId, body) {
-  validationUpdateProfile(body)
+  await validationInputUpdateProfile({ userId })
+
+  await validationUpdateProfile(body)
 
   if (body.password) {
     const hashPassword = crypto
@@ -26,20 +31,16 @@ async function updateProfile(userId, body) {
     body.password = hashPassword
   }
 
-  const updateValueKey = Object.keys(body)
-
-  const settingValue = updateValueKey.reduce(
-    (curr, elem) => (curr += `${elem} = "${body[elem]}",`),
-    ''
-  )
-
-  await db.query(
-    `UPDATE user SET ${settingValue} completed = true WHERE ? AND ?`,
-    [{ id: userId }, { verified: true }]
-  )
+  await db.query(`UPDATE user SET ? WHERE ? AND ?`, [
+    { ...body, completed: true },
+    { id: userId },
+    { verified: true },
+  ])
 }
 
 async function likeProfile(userId, visitId) {
+  await validationInputLikeProfile(userId, visitId)
+
   const matchExist = await db.query('SELECT id FROM user_match WHERE ?', [
     { user_id_1: userId },
   ])

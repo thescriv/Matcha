@@ -1,4 +1,4 @@
-const { validator } = require('../lib/validator')
+const { validator, validatorQuery } = require('../lib/validator')
 
 const validationUpdateProfile = ({
   firstname,
@@ -72,4 +72,14 @@ const validationUpdateProfile = ({
   validator(validatorUpdateProfile)
 }
 
-module.exports = { validationUpdateProfile }
+const validationInputUpdateProfile = async ({ userId }) => {
+  await validatorQuery([
+    {
+      table: 'user',
+      queryOptions: { id: userId },
+      message: 'api.profile user does_not_exist',
+    },
+  ])
+}
+
+module.exports = { validationUpdateProfile, validationInputUpdateProfile }

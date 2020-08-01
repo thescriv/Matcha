@@ -1,6 +1,6 @@
 const mysql = require('mysql')
 
-const config = require('../../../../config')
+const config = require('../../config')
 
 let pool = mysql.createPool(config.DB_CONFIG)
 
@@ -12,15 +12,13 @@ const disconnect = () => {
 
 const query = (query, queryOptions = []) => {
   return new Promise((resolve, reject) => {
-    pool.getConnection((_err, connection) => {
-      connection.query(query, queryOptions, (err, rows) => {
-        connection.release()
-        if (err) {
-          reject(err)
-        } else {
-          resolve(rows)
-        }
-      })
+    pool.query(query, queryOptions, (err, rows) => {
+      if (err) {
+        console.log(err?.sqlMessage)
+        reject(err)
+      } else {
+        resolve(rows)
+      }
     })
   })
 }

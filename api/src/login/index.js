@@ -18,7 +18,7 @@ routerLogin.post('/', async (req, res) => {
 
     res.sendStatus(204)
   } catch (err) {
-    console.error(err)
+    console.error(err.message)
     res.status(400).send({ error: err.message })
   }
 })

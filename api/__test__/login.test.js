@@ -1,6 +1,7 @@
 const crypto = require('crypto')
 const superagent = require('superagent')
 const webToken = require('jsonwebtoken')
+const dotenv = require('dotenv')
 
 const db = require('../src/lib/db')
 const jwt = require('../src/lib/webToken')
@@ -15,6 +16,8 @@ let baseUrl
 describe(`login -- `, () => {
   beforeAll(async () => {
     const port = getRandomPort()
+
+    dotenv.config({ path: '../.env' })
 
     baseUrl = `http://localhost:${port}/api`
 

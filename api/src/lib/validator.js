@@ -1,3 +1,5 @@
+const db = require('./db')
+
 const validator = (validationArr) => {
   if (!validationArr.length) {
     throw new Error('validation Array cannot be empty')
@@ -23,4 +25,22 @@ const validator = (validationArr) => {
   return true
 }
 
-module.exports = { validator }
+const validatorQuery = async (validationQuerys) => {
+  if (!validationQuerys.length) {
+    throw new Error('validationQuerys cannot be empty')
+  }
+
+  for (const validation of validationQuerys) {
+    const { table, queryOptions, message } = validation
+
+    const res = await db.query(`SELECT id FROM ${table} WHERE ?`, queryOptions)
+
+    if (!res.length) {
+      throw new Error(message)
+    }
+  }
+
+  return true
+}
+
+module.exports = { validator, validatorQuery }

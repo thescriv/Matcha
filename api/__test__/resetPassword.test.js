@@ -1,5 +1,6 @@
 const crypto = require('crypto')
 const superagent = require('superagent')
+const dotenv = require('dotenv')
 
 const db = require('../src/lib/db')
 
@@ -14,6 +15,8 @@ let baseUrl
 describe(`resetPassword --`, () => {
   beforeAll(async () => {
     const port = getRandomPort()
+
+    dotenv.config({ path: '../.env' })
 
     baseUrl = `http://localhost:${port}/api`
 
