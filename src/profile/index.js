@@ -76,18 +76,24 @@ routerProfile.use('/:visit_id', async (req, res, next) => {
     params: { visit_id },
   } = req
 
-  visitId = visit_id
+  visitId = parseInt(visit_id)
 
   if (userId === visitId) {
     res.status(500).send({ error: 'illegal action' })
+    return
   }
+
+  console.log(visitId)
 
   const visitUserExist = await db.query('SELECT id FROM user WHERE ?', [
     { id: visitId },
   ])
 
+  console.log(visitUserExist)
+
   if (!visitUserExist.length) {
     res.status(400).send({ err: 'user does not exist' })
+    return 
   }
 
   //userIsBlocked ?
@@ -97,9 +103,9 @@ routerProfile.use('/:visit_id', async (req, res, next) => {
 
 routerProfile.post('/:visit_id', async (_req, res) => {
   try {
-    await getProfile(userId, visitId)
+    const profileInfo = await getProfile(visitId)
 
-    res.sendStatus(204)
+    res.status(200).send({ profileInfo })
   } catch (err) {
     console.error(err.message)
     res.status(400).send({ error: err.message })

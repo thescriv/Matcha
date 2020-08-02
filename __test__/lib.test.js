@@ -3,13 +3,12 @@ const webToken = require('jsonwebtoken')
 
 const db = require('../src/lib/db')
 const jwt = require('../src/lib/webToken')
-const config = require('../config')
 
 const { initializationDB } = require('../scripts/initializationDB')
 const { initializationTables } = require('../scripts/initializationTables')
 
 const { getRandomToken } = require('../src/lib/getRandomToken')
-const { validator } = require('../src/lib/validator')
+const { validator, validatorQuery } = require('../src/lib/validator')
 
 const { script } = require('../scripts/script')
 const { deleteRows } = require('./utils/deleteRows')
@@ -17,7 +16,6 @@ const { getRandomPort } = require('./utils/getRandomPort')
 const { startApi, stopApi } = require('../api')
 
 describe('lib -- ', () => {
-
   afterEach(() => {
     jest.restoreAllMocks()
   })
@@ -253,7 +251,7 @@ describe('lib -- ', () => {
 
       try {
         validator([])
-      } catch(err) {
+      } catch (err) {
         error = err
       }
 
@@ -272,11 +270,23 @@ describe('lib -- ', () => {
             message: 'array is empty',
           },
         ])
-      } catch(err) {
+      } catch (err) {
         error = err
       }
 
-      
+      expect(error.message).toMatchSnapshot()
+    })
+  })
+
+  describe('validatorQuery --', () => {
+    test('do not validate (arrayValidator is empty)', async () => {
+      let error
+
+      try {
+        await validatorQuery([])
+      } catch (err) {
+        error = err
+      }
 
       expect(error.message).toMatchSnapshot()
     })

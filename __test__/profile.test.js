@@ -158,7 +158,6 @@ describe(`profile -- `, () => {
 
   describe('GET /profile/me', () => {
     test('do get me', async () => {
-
       const { body, status } = await superagent
         .get(`${baseUrl}/profile/me`)
         .set('Authorization', `Bearer ${token}`)
@@ -214,7 +213,6 @@ describe(`profile -- `, () => {
 
   describe('POST /profile/update', () => {
     test('do update profile', async () => {
-
       const { body, status } = await superagent
         .post(`${baseUrl}/profile/update`)
         .set('Authorization', `Bearer ${token}`)
@@ -261,6 +259,59 @@ describe(`profile -- `, () => {
 
       const user = await db.query('SELECT * FROM user')
       expect(user).toMatchSnapshot()
+    })
+  })
+
+  describe(':visit_id', () => {
+    let visitId
+
+    beforeEach(async () => {
+      const { insertId } = await db.query(
+        `INSERT INTO user (nickname, firstname, lastname, email, password) 
+              VALUES ("gdelabro", "guilhem", "test", "glb@test.test", "abc")`
+      )
+
+      visitId = insertId
+    })
+
+    test('do not visit (user does not exist)', async () => {
+      let error
+
+      try {
+        await superagent
+          .post(`${baseUrl}/profile/99`)
+          .set('Authorization', `Bearer ${token}`)
+      } catch (err) {
+        error = err
+      }
+      const { body, status } = error.response
+
+      expect({ body, status }).toMatchSnapshot()
+    })
+
+    test('do not visit (user try to visit himself)', async () => {
+      let error
+
+      try {
+        await superagent
+          .post(`${baseUrl}/profile/${userId}`)
+          .set('Authorization', `Bearer ${token}`)
+      } catch (err) {
+        error = err
+      }
+      const { body, status } = error.response
+
+      expect({ body, status }).toMatchSnapshot()
+    })
+
+    describe('POST /profile/:visit_id', () => {
+      test('do visit', async () => {
+        const { body, status } = await superagent
+          .post(`${baseUrl}/profile/${visitId}`)
+          .set('Authorization', `Bearer ${token}`)
+
+        expect({ body, status }).toMatchSnapshot()
+      })
     })
   })
 })

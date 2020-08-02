@@ -1,5 +1,45 @@
 // Jest Snapshot v1, https://goo.gl/fbAQLP
 
+exports[`profile --  :visit_id POST /profile/:visit_id do visit 1`] = `
+Object {
+  "body": Object {
+    "profileInfo": Object {
+      "bio": null,
+      "completed": 0,
+      "email": "glb@test.test",
+      "firstname": "guilhem",
+      "gender_id": null,
+      "id": 2,
+      "lastname": "test",
+      "nickname": "gdelabro",
+      "orientation_id": 1,
+      "password": "abc",
+      "score": 100,
+      "verified": 0,
+    },
+  },
+  "status": 200,
+}
+`;
+
+exports[`profile --  :visit_id do not visit (user does not exist) 1`] = `
+Object {
+  "body": Object {
+    "err": "user does not exist",
+  },
+  "status": 400,
+}
+`;
+
+exports[`profile --  :visit_id do not visit (user try to visit himself) 1`] = `
+Object {
+  "body": Object {
+    "error": "illegal action",
+  },
+  "status": 500,
+}
+`;
+
 exports[`profile --  GET /profile/logout do logout 1`] = `
 Object {
   "body": Object {},
