@@ -241,7 +241,6 @@ describe(`profile -- `, () => {
     })
 
     test('do not update profile (body is not valid)', async () => {
-
       let error
 
       try {
@@ -303,6 +302,29 @@ describe(`profile -- `, () => {
       expect({ body, status }).toMatchSnapshot()
     })
 
+    test('do not visit (user has been blocked)', async () => {
+      await db.query(
+        'INSERT INTO user_blocked (user_id_1, user_id_2) VALUES(?, ?)',
+        [visitId, userId]
+      )
+
+      let error
+      try {
+        await superagent
+          .post(`${baseUrl}/profile/${visitId}/block`)
+          .set('Authorization', `Bearer ${token}`)
+      } catch (err) {
+        error = err
+      }
+      const { body, status } = error.response
+
+      expect({ body, status }).toMatchSnapshot()
+
+      const user_blocked = await db.query('SELECT * FROM user_blocked')
+
+      expect(user_blocked).toMatchSnapshot()
+    })
+
     describe('POST /profile/:visit_id', () => {
       test('do visit', async () => {
         const { body, status } = await superagent
@@ -311,7 +333,6 @@ describe(`profile -- `, () => {
 
         expect({ body, status }).toMatchSnapshot()
       })
-
     })
 
     describe('POST /profile/:visit_id/like', () => {
@@ -386,6 +407,37 @@ describe(`profile -- `, () => {
         const { body, status } = error.response
 
         expect({ body, status }).toMatchSnapshot()
+      })
+    })
+
+    describe('POST /profile/:visit_id/block', () => {
+      test('do block', async () => {
+        const { body, status } = await superagent
+          .post(`${baseUrl}/profile/${visitId}/block`)
+          .set('Authorization', `Bearer ${token}`)
+
+        expect({ body, status }).toMatchSnapshot()
+
+        const user_blocked = await db.query('SELECT * FROM user_blocked')
+
+        expect(user_blocked).toMatchSnapshot()
+      })
+
+      test('do unblock', async () => {
+        await db.query(
+          'INSERT INTO user_blocked (user_id_1, user_id_2) VALUES(?, ?)',
+          [userId, visitId]
+        )
+
+        const { body, status } = await superagent
+          .post(`${baseUrl}/profile/${visitId}/block`)
+          .set('Authorization', `Bearer ${token}`)
+
+        expect({ body, status }).toMatchSnapshot()
+
+        const user_blocked = await db.query('SELECT * FROM user_blocked')
+
+        expect(user_blocked).toMatchSnapshot()
       })
     })
   })

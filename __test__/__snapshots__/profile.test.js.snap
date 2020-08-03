@@ -22,6 +22,32 @@ Object {
 }
 `;
 
+exports[`profile --  :visit_id POST /profile/:visit_id/block do block 1`] = `
+Object {
+  "body": Object {},
+  "status": 204,
+}
+`;
+
+exports[`profile --  :visit_id POST /profile/:visit_id/block do block 2`] = `
+Array [
+  RowDataPacket {
+    "id": 1,
+    "user_id_1": 1,
+    "user_id_2": 2,
+  },
+]
+`;
+
+exports[`profile --  :visit_id POST /profile/:visit_id/block do unblock 1`] = `
+Object {
+  "body": Object {},
+  "status": 204,
+}
+`;
+
+exports[`profile --  :visit_id POST /profile/:visit_id/block do unblock 2`] = `Array []`;
+
 exports[`profile --  :visit_id POST /profile/:visit_id/like do like 1`] = `
 Object {
   "body": Object {},
@@ -83,6 +109,25 @@ Object {
   },
   "status": 400,
 }
+`;
+
+exports[`profile --  :visit_id do not visit (user has been blocked) 1`] = `
+Object {
+  "body": Object {
+    "err": "api.profile user you_have_been_blocked",
+  },
+  "status": 400,
+}
+`;
+
+exports[`profile --  :visit_id do not visit (user has been blocked) 2`] = `
+Array [
+  RowDataPacket {
+    "id": 1,
+    "user_id_1": 2,
+    "user_id_2": 1,
+  },
+]
 `;
 
 exports[`profile --  :visit_id do not visit (user try to visit himself) 1`] = `

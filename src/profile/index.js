@@ -8,6 +8,7 @@ const {
   updateProfile,
   likeProfile,
   visitProfile,
+  blockProfile,
 } = require('./controller')
 
 const routerProfile = express.Router()
@@ -52,9 +53,9 @@ routerProfile.use('/', async (req, res, next) => {
 })
 
 routerProfile.get('/me', async (_req, res) => {
-    const profileInfo = await getProfile(userId)
+  const profileInfo = await getProfile(userId)
 
-    res.status(200).send({ profileInfo })
+  res.status(200).send({ profileInfo })
 })
 
 routerProfile.post('/update', async (req, res) => {
@@ -104,7 +105,19 @@ routerProfile.use('/:visit_id', async (req, res, next) => {
     return
   }
 
-  //userIsBlocked ?
+  const visitedUserBlockedUser = await db.query(
+    `SELECT id FROM user_blocked WHERE ? AND ?`,
+    [{ user_id_1: visitId }, { user_id_2: userId }]
+  )
+
+  console.log(visitId, userId)
+
+  console.log(visitedUserBlockedUser)
+
+  if (visitedUserBlockedUser.length) {
+    res.status(400).send({ err: 'api.profile user you_have_been_blocked' })
+    return
+  }
 
   next()
 })
@@ -129,6 +142,12 @@ routerProfile.post('/:visit_id/like', async (_req, res) => {
     console.error(err.message)
     res.status(400).send({ error: err.message })
   }
+})
+
+routerProfile.post('/:visit_id/block', async (_req, res) => {
+  await blockProfile(userId, visitId)
+
+  res.sendStatus(204)
 })
 
 module.exports = { routerProfile }

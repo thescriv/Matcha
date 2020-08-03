@@ -73,6 +73,14 @@ const tables = [
     ],
   },
   {
+    name: 'user_blocked',
+    columns: [
+      'id INT PRIMARY KEY NOT NULL AUTO_INCREMENT',
+      'user_id_1 INT NOT NULL',
+      'user_id_2 INT NOT NULL',
+    ],
+  },
+  {
     name: 'user_match',
     columns: [
       'id INT PRIMARY KEY NOT NULL AUTO_INCREMENT',
