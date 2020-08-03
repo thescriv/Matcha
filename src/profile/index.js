@@ -9,6 +9,7 @@ const {
   likeProfile,
   visitProfile,
   blockProfile,
+  flagProfile
 } = require('./controller')
 
 const routerProfile = express.Router()
@@ -110,10 +111,6 @@ routerProfile.use('/:visit_id', async (req, res, next) => {
     [{ user_id_1: visitId }, { user_id_2: userId }]
   )
 
-  console.log(visitId, userId)
-
-  console.log(visitedUserBlockedUser)
-
   if (visitedUserBlockedUser.length) {
     res.status(400).send({ err: 'api.profile user you_have_been_blocked' })
     return
@@ -146,6 +143,12 @@ routerProfile.post('/:visit_id/like', async (_req, res) => {
 
 routerProfile.post('/:visit_id/block', async (_req, res) => {
   await blockProfile(userId, visitId)
+
+  res.sendStatus(204)
+})
+
+routerProfile.post('/:visit_id/flag', async (_req, res) => {
+  await flagProfile(visitId)
 
   res.sendStatus(204)
 })

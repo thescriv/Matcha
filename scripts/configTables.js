@@ -103,6 +103,14 @@ const tables = [
       'tag_id INT NOT NULL',
     ],
   },
+  {
+    name: 'user_flaged',
+    columns: [
+      'id INT PRIMARY KEY NOT NULL AUTO_INCREMENT',
+      'user_id INT NOT NULL UNIQUE',
+      'flag_count INT'
+    ]
+  }
 ]
 
 module.exports = { tables }

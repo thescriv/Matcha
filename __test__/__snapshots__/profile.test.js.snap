@@ -48,6 +48,40 @@ Object {
 
 exports[`profile --  :visit_id POST /profile/:visit_id/block do unblock 2`] = `Array []`;
 
+exports[`profile --  :visit_id POST /profile/:visit_id/flag do flag (user already flagged) 1`] = `
+Object {
+  "body": Object {},
+  "status": 204,
+}
+`;
+
+exports[`profile --  :visit_id POST /profile/:visit_id/flag do flag (user already flagged) 2`] = `
+Array [
+  RowDataPacket {
+    "flag_count": 2,
+    "id": 1,
+    "user_id": 2,
+  },
+]
+`;
+
+exports[`profile --  :visit_id POST /profile/:visit_id/flag do flag 1`] = `
+Object {
+  "body": Object {},
+  "status": 204,
+}
+`;
+
+exports[`profile --  :visit_id POST /profile/:visit_id/flag do flag 2`] = `
+Array [
+  RowDataPacket {
+    "flag_count": 1,
+    "id": 1,
+    "user_id": 2,
+  },
+]
+`;
+
 exports[`profile --  :visit_id POST /profile/:visit_id/like do like 1`] = `
 Object {
   "body": Object {},

@@ -103,10 +103,18 @@ async function blockProfile(userId, visitId) {
   )
 }
 
+async function flagProfile(visitId) {
+  await db.query(
+    `INSERT INTO user_flaged (user_id, flag_count) VALUES (?, ?) ON DUPLICATE KEY UPDATE flag_count = flag_count + 1`,
+    [visitId, 1]
+  )
+}
+
 module.exports = {
   getProfile,
   updateProfile,
   likeProfile,
   visitProfile,
   blockProfile,
+  flagProfile,
 }

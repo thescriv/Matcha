@@ -440,5 +440,35 @@ describe(`profile -- `, () => {
         expect(user_blocked).toMatchSnapshot()
       })
     })
+
+    describe('POST /profile/:visit_id/flag', () => {
+      test('do flag', async () => {
+        const { body, status } = await superagent
+          .post(`${baseUrl}/profile/${visitId}/flag`)
+          .set('Authorization', `Bearer ${token}`)
+
+        expect({ body, status }).toMatchSnapshot()
+
+        const user_flaged = await db.query('SELECT * FROM user_flaged')
+
+        expect(user_flaged).toMatchSnapshot()
+      })
+
+      test('do flag (user already flagged)', async () => {
+        await db.query(
+          `INSERT INTO user_flaged (user_id, flag_count) VALUES (?, ?)`,
+          [visitId, 1]
+        )
+        const { body, status } = await superagent
+          .post(`${baseUrl}/profile/${visitId}/flag`)
+          .set('Authorization', `Bearer ${token}`)
+
+        expect({ body, status }).toMatchSnapshot()
+
+        const user_flaged = await db.query('SELECT * FROM user_flaged')
+
+        expect(user_flaged).toMatchSnapshot()
+      })
+    })
   })
 })
