@@ -4,22 +4,21 @@ const crypto = require('crypto')
 
 const {
   validationUpdateProfile,
-  validationInputUpdateProfile,
 } = require('./schema')
 
 async function getProfile(userId) {
   const user = await db.query(`SELECT * FROM user WHERE ?`, [{ id: userId }])
 
-  if (!user.length) {
-    throw new Error('api.profile user does_not_exist')
-  }
-
   return user[0]
 }
 
-async function updateProfile(userId, body) {
-  await validationInputUpdateProfile({ userId })
+async function visitProfile(userId, visitId) {
+  const userVisited = await db.query(`SELECT * FROM user WHERE ?`, [{ id: visitId }])
 
+  return userVisited[0]
+}
+
+async function updateProfile(userId, body) {
   await validationUpdateProfile(body)
 
   if (body.password) {
@@ -39,23 +38,23 @@ async function updateProfile(userId, body) {
 }
 
 async function likeProfile(userId, visitId) {
-  await validationInputLikeProfile(userId, visitId)
+  const [matchExist, userAlreadyLiked] = [
+    await db.query('SELECT id FROM user_match WHERE (? OR ?) AND (? OR ?)', [
+      { user_id_1: userId },
+      { user_id_2: userId },
+      { user_id_2: visitId },
+      { user_id_1: visitId },
+    ]),
+    await db.query('SELECT id FROM user_like WHERE ? AND ?', [
+      { user_id_1: userId },
+      { user_id_2: visitId },
+    ]),
+  ]
 
-  const matchExist = await db.query('SELECT id FROM user_match WHERE ?', [
-    { user_id_1: userId },
-  ])
-
-  if (matchExist.length) {
-    throw new Error('api.profile like user_already_matched')
-  }
-
-  const userAlreadyLiked = await db.query(
-    'SELECT id FROM user_like WHERE ? AND ?',
-    [{ user_id_1: userId }, { user_id_2: visitId }]
-  )
-
-  if (userAlreadyLiked.length) {
-    throw new Error('api.profile like user_already_liked')
+  if (matchExist.length || userAlreadyLiked.length) {
+    throw new Error(
+      `api.profile like user_already_${matchExist.length ? 'matched' : 'liked'}`
+    )
   }
 
   const mutualLike = await db.query('SELECT id FROM user_like WHERE ? AND ?', [
@@ -65,7 +64,7 @@ async function likeProfile(userId, visitId) {
 
   if (mutualLike.length) {
     await db.query(
-      'INSERT INTO user_match (user_id_1, user_id_2), VALUES(?, ?)',
+      'INSERT INTO user_match (user_id_1, user_id_2) VALUES(?, ?)',
       [userId, visitId]
     )
 
@@ -77,10 +76,10 @@ async function likeProfile(userId, visitId) {
     return
   }
 
-  await db.query('INSERT INTO user_like (user_id_1, user_id_2), VALUES(?, ?)', [
+  await db.query('INSERT INTO user_like (user_id_1, user_id_2) VALUES(?, ?)', [
     userId,
     visitId,
   ])
 }
 
-module.exports = { getProfile, updateProfile, likeProfile }
+module.exports = { getProfile, updateProfile, likeProfile, visitProfile }

@@ -8,7 +8,7 @@ const { initializationDB } = require('../scripts/initializationDB')
 const { initializationTables } = require('../scripts/initializationTables')
 
 const { getRandomToken } = require('../src/lib/getRandomToken')
-const { validator, validatorQuery } = require('../src/lib/validator')
+const { validator } = require('../src/lib/validator')
 
 const { script } = require('../scripts/script')
 const { deleteRows } = require('./utils/deleteRows')
@@ -270,20 +270,6 @@ describe('lib -- ', () => {
             message: 'array is empty',
           },
         ])
-      } catch (err) {
-        error = err
-      }
-
-      expect(error.message).toMatchSnapshot()
-    })
-  })
-
-  describe('validatorQuery --', () => {
-    test('do not validate (arrayValidator is empty)', async () => {
-      let error
-
-      try {
-        await validatorQuery([])
       } catch (err) {
         error = err
       }

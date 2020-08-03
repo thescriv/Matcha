@@ -68,8 +68,8 @@ const tables = [
     name: 'user_like',
     columns: [
       'id INT PRIMARY KEY NOT NULL AUTO_INCREMENT',
-      'liker_id INT NOT NULL',
-      'user_id INT NOT NULL',
+      'user_id_1 INT NOT NULL',
+      'user_id_2 INT NOT NULL',
     ],
   },
   {

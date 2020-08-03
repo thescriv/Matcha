@@ -3,18 +3,24 @@ const express = require('express')
 const jwt = require('../lib/webToken')
 const db = require('../lib/db')
 
-const { getProfile, updateProfile, likeProfile } = require('./controller')
+const {
+  getProfile,
+  updateProfile,
+  likeProfile,
+  visitProfile,
+} = require('./controller')
 
 const routerProfile = express.Router()
 
 let userId = null
 let visitId = null
 
-routerProfile.use('/', (req, res, next) => {
+routerProfile.use('/', async (req, res, next) => {
   const authHeader = req.headers.authorization
 
   if (!authHeader) {
     res.sendStatus(401)
+    return
   }
 
   const token = authHeader.split(' ')[1]
@@ -24,25 +30,31 @@ routerProfile.use('/', (req, res, next) => {
 
     if (!tokenInfo.user_id || !tokenInfo.logged) {
       res.status(401).send({ err: 'auth token unknow_token' })
+      return
+    }
+
+    const userExist = await db.query('SELECT id FROM user WHERE ?', [
+      { id: tokenInfo.user_id },
+    ])
+
+    if (!userExist.length) {
+      res.status(400).send({ error: 'api.profile user does_not_exist' })
+      return
     }
 
     userId = tokenInfo.user_id
   } catch (error) {
     res.status(400).send({ error: error.message })
+    return
   }
 
   next()
 })
 
 routerProfile.get('/me', async (_req, res) => {
-  try {
     const profileInfo = await getProfile(userId)
 
     res.status(200).send({ profileInfo })
-  } catch (err) {
-    console.error(err.message)
-    res.status(400).send({ error: err.message })
-  }
 })
 
 routerProfile.post('/update', async (req, res) => {
@@ -83,17 +95,13 @@ routerProfile.use('/:visit_id', async (req, res, next) => {
     return
   }
 
-  console.log(visitId)
-
   const visitUserExist = await db.query('SELECT id FROM user WHERE ?', [
     { id: visitId },
   ])
 
-  console.log(visitUserExist)
-
   if (!visitUserExist.length) {
-    res.status(400).send({ err: 'user does not exist' })
-    return 
+    res.status(400).send({ err: 'api.profile userVisited does_not_exist' })
+    return
   }
 
   //userIsBlocked ?
@@ -102,14 +110,14 @@ routerProfile.use('/:visit_id', async (req, res, next) => {
 })
 
 routerProfile.post('/:visit_id', async (_req, res) => {
-  try {
-    const profileInfo = await getProfile(visitId)
+  //  try {
+  const profileInfo = await visitProfile(userId, visitId)
 
-    res.status(200).send({ profileInfo })
-  } catch (err) {
+  res.status(200).send({ profileInfo })
+  /*   } catch (err) {
     console.error(err.message)
     res.status(400).send({ error: err.message })
-  }
+  } */
 })
 
 routerProfile.post('/:visit_id/like', async (_req, res) => {

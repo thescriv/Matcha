@@ -240,8 +240,7 @@ describe(`profile -- `, () => {
       expect(user).toMatchSnapshot()
     })
 
-    test('do not update profile (user does not exist)', async () => {
-      await db.query(`DELETE FROM user WHERE id = ${userId}`)
+    test('do not update profile (body is not valid)', async () => {
 
       let error
 
@@ -249,7 +248,7 @@ describe(`profile -- `, () => {
         await superagent
           .post(`${baseUrl}/profile/update`)
           .set('Authorization', `Bearer ${token}`)
-          .send({ firstname: 'Jack' })
+          .send({ password: 'Ai' })
       } catch (err) {
         error = err
       }
@@ -309,6 +308,82 @@ describe(`profile -- `, () => {
         const { body, status } = await superagent
           .post(`${baseUrl}/profile/${visitId}`)
           .set('Authorization', `Bearer ${token}`)
+
+        expect({ body, status }).toMatchSnapshot()
+      })
+
+    })
+
+    describe('POST /profile/:visit_id/like', () => {
+      test('do like', async () => {
+        const { body, status } = await superagent
+          .post(`${baseUrl}/profile/${visitId}/like`)
+          .set('Authorization', `Bearer ${token}`)
+
+        expect({ body, status }).toMatchSnapshot()
+
+        const user_like = await db.query('SELECT * FROM user_like')
+
+        expect(user_like).toMatchSnapshot()
+      })
+
+      test('do not like (already liked)', async () => {
+        await db.query(
+          'INSERT INTO user_like (user_id_1, user_id_2) VALUES(?, ?)',
+          [userId, visitId]
+        )
+
+        let error
+
+        try {
+          await superagent
+            .post(`${baseUrl}/profile/${visitId}/like`)
+            .set('Authorization', `Bearer ${token}`)
+        } catch (err) {
+          error = err
+        }
+        const { body, status } = error.response
+
+        expect({ body, status }).toMatchSnapshot()
+      })
+
+      test('do match', async () => {
+        await db.query(
+          'INSERT INTO user_like (user_id_1, user_id_2) VALUES(?, ?)',
+          [visitId, userId]
+        )
+
+        const { body, status } = await superagent
+          .post(`${baseUrl}/profile/${visitId}/like`)
+          .set('Authorization', `Bearer ${token}`)
+
+        expect({ body, status }).toMatchSnapshot()
+
+        const user_like = await db.query('SELECT * FROM user_like')
+
+        expect(user_like).toMatchSnapshot()
+
+        const user_match = await db.query('SELECT * FROM user_match')
+
+        expect(user_match).toMatchSnapshot()
+      })
+
+      test('do not match (already liked)', async () => {
+        await db.query(
+          'INSERT INTO user_match (user_id_1, user_id_2) VALUES(?, ?)',
+          [userId, visitId]
+        )
+
+        let error
+
+        try {
+          await superagent
+            .post(`${baseUrl}/profile/${visitId}/like`)
+            .set('Authorization', `Bearer ${token}`)
+        } catch (err) {
+          error = err
+        }
+        const { body, status } = error.response
 
         expect({ body, status }).toMatchSnapshot()
       })
