@@ -1,3 +1,5 @@
+const createError = require('http-errors')
+
 const validator = (validationArr) => {
   if (!validationArr.length) {
     throw new Error('validation Array cannot be empty')
@@ -17,7 +19,7 @@ const validator = (validationArr) => {
           ((type === 'array' && element.length) || typeof element === type))
       )
     ) {
-      throw new Error(message)
+      throw createError(400, message)
     }
   }
   return true

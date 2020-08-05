@@ -1,24 +1,25 @@
-const db = require('../lib/db')
-
+const createError = require('http-errors')
 const crypto = require('crypto')
+
+const db = require('../lib/db')
 
 const { validationUpdateProfile } = require('./schema')
 
-async function getProfile(userId) {
+async function getProfile(req, res) {
+  const { auth } = req
+
+  const { userId } = auth
+
   const user = await db.query(`SELECT * FROM user WHERE ?`, [{ id: userId }])
 
-  return user[0]
+  res.statut(200).send(user[0])
 }
 
-async function visitProfile(userId, visitId) {
-  const userVisited = await db.query(`SELECT * FROM user WHERE ?`, [
-    { id: visitId },
-  ])
+async function updateProfile(req, res) {
+  const { auth, body } = req
 
-  return userVisited[0]
-}
+  const userId = auth
 
-async function updateProfile(userId, body) {
   await validationUpdateProfile(body)
 
   if (body.password) {
@@ -35,21 +36,53 @@ async function updateProfile(userId, body) {
     { id: userId },
     { verified: true },
   ])
+
+  res.sendStatus(204)
+}
+
+async function getVisitedUser(req, res) {
+  const { auth: userId } = req
+
+  const visitedUser = await db.query(
+    'SELECT user.nickname from user INNER JOIN user_visit ON user.id = user_visit.user_id_1 WHERE ? LIMIT 5',
+    [{ 'user_visit.user_id_2': userId }]
+  )
+
+  res.status(200).send(visitedUser)
+}
+
+async function getLikedUser(req, res) {
+  const { auth: userId } = req
+
+  const likedUser = await db.query(
+    'SELECT user.nickname from user INNER JOIN user_like ON user.id = user_visit.user_id_1 WHERE ? LIMIT 5',
+    [{ 'user_visit.user_id_2': userId }]
+  )
+
+  res.status(200).send(likedUser)
+}
+
+async function visitProfile(userId, visitId) {
+  const userVisited = await db.query(`SELECT * FROM user WHERE ?`, [
+    { id: visitId },
+  ])
+
+  return userVisited[0]
 }
 
 async function likeProfile(userId, visitId) {
-  const [matchExist, userAlreadyLiked] = [
-    await db.query('SELECT id FROM user_match WHERE (? OR ?) AND (? OR ?)', [
+  const [matchExist, userAlreadyLiked] = await Promise.all([
+    db.query('SELECT id FROM user_match WHERE (? OR ?) AND (? OR ?)', [
       { user_id_1: userId },
       { user_id_2: userId },
       { user_id_2: visitId },
       { user_id_1: visitId },
     ]),
-    await db.query('SELECT id FROM user_like WHERE ? AND ?', [
+    db.query('SELECT id FROM user_like WHERE ? AND ?', [
       { user_id_1: userId },
       { user_id_2: visitId },
     ]),
-  ]
+  ])
 
   if (matchExist.length || userAlreadyLiked.length) {
     throw new Error(
@@ -101,6 +134,27 @@ async function blockProfile(userId, visitId) {
     'INSERT INTO user_blocked (user_id_1, user_id_2) VALUES(?, ?)',
     [userId, visitId]
   )
+
+  await Promise.all([
+    db.query('DELETE * FROM user_visit WHERE (? AND ?) OR (? AND ?)', [
+      { user_id_1: userId },
+      { user_id_2: visitId },
+      { user_id_1: visitId },
+      { user_id_2: UserId },
+    ]),
+    db.query('DELETE * FROM user_like WHERE (? AND ?) OR (? AND ?)', [
+      { user_id_1: userId },
+      { user_id_2: visitId },
+      { user_id_1: visitId },
+      { user_id_2: UserId },
+    ]),
+    db.query('DELETE * FROM user_match WHERE (? AND ?) OR (? AND ?)', [
+      { user_id_1: userId },
+      { user_id_2: visitId },
+      { user_id_1: visitId },
+      { user_id_2: UserId },
+    ]),
+  ])
 }
 
 async function flagProfile(visitId) {
@@ -117,4 +171,6 @@ module.exports = {
   visitProfile,
   blockProfile,
   flagProfile,
+  getVisitedUser,
+  getLikedUser,
 }

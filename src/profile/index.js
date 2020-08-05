@@ -9,7 +9,9 @@ const {
   likeProfile,
   visitProfile,
   blockProfile,
-  flagProfile
+  flagProfile,
+  getVisitedUser,
+  getLikedUser
 } = require('./controller')
 
 const routerProfile = express.Router()
@@ -17,60 +19,9 @@ const routerProfile = express.Router()
 let userId = null
 let visitId = null
 
-routerProfile.use('/', async (req, res, next) => {
-  const authHeader = req.headers.authorization
+routerProfile.get('/me', getProfile)
 
-  if (!authHeader) {
-    res.sendStatus(401)
-    return
-  }
-
-  const token = authHeader.split(' ')[1]
-
-  try {
-    const tokenInfo = jwt.verify(token)
-
-    if (!tokenInfo.user_id || !tokenInfo.logged) {
-      res.status(401).send({ err: 'auth token unknow_token' })
-      return
-    }
-
-    const userExist = await db.query('SELECT id FROM user WHERE ?', [
-      { id: tokenInfo.user_id },
-    ])
-
-    if (!userExist.length) {
-      res.status(400).send({ error: 'api.profile user does_not_exist' })
-      return
-    }
-
-    userId = tokenInfo.user_id
-  } catch (error) {
-    res.status(400).send({ error: error.message })
-    return
-  }
-
-  next()
-})
-
-routerProfile.get('/me', async (_req, res) => {
-  const profileInfo = await getProfile(userId)
-
-  res.status(200).send({ profileInfo })
-})
-
-routerProfile.post('/update', async (req, res) => {
-  const { body } = req
-
-  try {
-    await updateProfile(userId, body)
-
-    res.sendStatus(204)
-  } catch (err) {
-    console.error(err.message)
-    res.status(400).send({ error: err.message })
-  }
-})
+routerProfile.post('/update', updateProfile)
 
 routerProfile.get('/logout', async (_req, res) => {
   try {
@@ -85,39 +36,10 @@ routerProfile.get('/logout', async (_req, res) => {
   }
 })
 
-routerProfile.use('/:visit_id', async (req, res, next) => {
-  const {
-    params: { visit_id },
-  } = req
+routerProfile.get('/visited_user', getVisitedUser)
 
-  visitId = parseInt(visit_id)
+routerProfile.get('/liked_user', getLikedUser)
 
-  if (userId === visitId) {
-    res.status(500).send({ error: 'illegal action' })
-    return
-  }
-
-  const visitUserExist = await db.query('SELECT id FROM user WHERE ?', [
-    { id: visitId },
-  ])
-
-  if (!visitUserExist.length) {
-    res.status(400).send({ err: 'api.profile userVisited does_not_exist' })
-    return
-  }
-
-  const visitedUserBlockedUser = await db.query(
-    `SELECT id FROM user_blocked WHERE ? AND ?`,
-    [{ user_id_1: visitId }, { user_id_2: userId }]
-  )
-
-  if (visitedUserBlockedUser.length) {
-    res.status(400).send({ err: 'api.profile user you_have_been_blocked' })
-    return
-  }
-
-  next()
-})
 
 routerProfile.post('/:visit_id', async (_req, res) => {
   //  try {
