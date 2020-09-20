@@ -6,13 +6,15 @@ const db = require('../lib/db')
 const { validationUpdateProfile } = require('./schema')
 
 async function getProfile(req, res) {
-  const { auth } = req
-
-  const { userId } = auth
+  const {
+    auth: { userId },
+  } = req
 
   const user = await db.query(`SELECT * FROM user WHERE ?`, [{ id: userId }])
 
-  res.statut(200).send(user[0])
+  console.log(user)
+
+  res.status(200).send({ user: user[0] })
 }
 
 async function updateProfile(req, res) {
@@ -62,15 +64,23 @@ async function getLikedUser(req, res) {
   res.status(200).send(likedUser)
 }
 
-async function visitProfile(userId, visitId) {
+async function visitProfile(req, res) {
+  const { auth } = req
+
+  const { visitId } = auth
+
   const userVisited = await db.query(`SELECT * FROM user WHERE ?`, [
     { id: visitId },
   ])
 
-  return userVisited[0]
+  res.status(200).send({ user: userVisited[0] })
 }
 
-async function likeProfile(userId, visitId) {
+async function likeProfile(req, res) {
+  const { auth } = req
+
+  const { userId, visitId } = auth
+
   const [matchExist, userAlreadyLiked] = await Promise.all([
     db.query('SELECT id FROM user_match WHERE (? OR ?) AND (? OR ?)', [
       { user_id_1: userId },
@@ -85,7 +95,8 @@ async function likeProfile(userId, visitId) {
   ])
 
   if (matchExist.length || userAlreadyLiked.length) {
-    throw new Error(
+    throw createError(
+      400,
       `api.profile like user_already_${matchExist.length ? 'matched' : 'liked'}`
     )
   }
@@ -107,15 +118,20 @@ async function likeProfile(userId, visitId) {
     ])
 
     return
+  } else {
+    await db.query(
+      'INSERT INTO user_like (user_id_1, user_id_2) VALUES(?, ?)',
+      [userId, visitId]
+    )
   }
 
-  await db.query('INSERT INTO user_like (user_id_1, user_id_2) VALUES(?, ?)', [
-    userId,
-    visitId,
-  ])
+  res.sendStatus(204)
 }
 
-async function blockProfile(userId, visitId) {
+async function blockProfile(req, res) {
+  const { auth } = req
+
+  const { userId, visitId } = auth
   const alreadyBlocked = await db.query(
     'SELECT id FROM user_blocked WHERE ? AND ?',
     [{ user_id_1: userId }, { user_id_2: visitId }]
@@ -127,7 +143,7 @@ async function blockProfile(userId, visitId) {
       { user_id_2: visitId },
     ])
 
-    return
+    res.sendStatus(204)
   }
 
   await db.query(
@@ -155,13 +171,20 @@ async function blockProfile(userId, visitId) {
       { user_id_2: UserId },
     ]),
   ])
+
+  res.sendStatus(204)
 }
 
-async function flagProfile(visitId) {
+async function flagProfile(req, res) {
+  const {
+    auth: { visitId },
+  } = req
   await db.query(
     `INSERT INTO user_flaged (user_id, flag_count) VALUES (?, ?) ON DUPLICATE KEY UPDATE flag_count = flag_count + 1`,
     [visitId, 1]
   )
+
+  res.sendStatus(204)
 }
 
 module.exports = {

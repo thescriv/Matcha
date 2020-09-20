@@ -30,8 +30,8 @@ describe(`profile -- `, () => {
 
   beforeEach(async () => {
     const insertedUser = await db.query(
-      `INSERT INTO user (nickname, firstname, lastname, email, password) 
-              VALUES ("thescriv", "theo", "test", "test@test.test", "abc")`
+      `INSERT INTO user (nickname, firstname, lastname, email, password, bio, gender_id) 
+              VALUES ("thescriv", "theo", "test", "test@test.test", "abc", "", 1)`
     )
 
     userId = insertedUser.insertId

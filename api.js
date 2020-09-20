@@ -16,7 +16,7 @@ async function startApi(port) {
   app.use(bodyParser.json())
   app.use(cookieParser())
   app.use(cors())
-  app.use(authMiddleware())
+  app.use(authMiddleware)
 
   server = app.listen(port, () => {
     console.log(`Listening on port: "${port}"`)

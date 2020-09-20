@@ -1,6 +1,13 @@
 const createError = require('http-errors')
 
+const jwt = require('../src/lib/webToken')
+const db = require('../src/lib/db')
+
 async function authMiddleware(req, _res, next) {
+  const {
+    params: { visit_id },
+  } = req
+  
   req.auth = {
     userId: null,
     visitId: null,
@@ -21,8 +28,8 @@ async function authMiddleware(req, _res, next) {
 
     try {
       req.token = jwt.verify(token)
-    } catch (error) {
-      throw createError(400, error.message)
+    } catch (err) {
+      throw createError(400, err.message)
     }
 
     if (!req.token.user_id || !req.token.logged) {
@@ -39,27 +46,9 @@ async function authMiddleware(req, _res, next) {
 
     req.userId = req.token.user_id
 
-    const {
-      params: { visit_id },
-    } = req
-
     if (visit_id) {
       req.visitId = parseInt(visit_id)
-    }
 
-    req.assertUser = () => {
-      if (!userId) {
-        throw createError(403, 'api.auth user is_not_set')
-      }
-    }
-
-    req.assertAuth = () => {
-      if (!req.token) {
-        throw createError(403, 'api.auth token is_not_provided')
-      }
-    }
-
-    req.assertVisit = async () => {
       if (req.userId === req.visitId) {
         throw createError(500, 'illegal action')
       }
@@ -72,22 +61,38 @@ async function authMiddleware(req, _res, next) {
         throw createError(400, 'api.auth.visit userVisited does_not_exist')
       }
 
-      const visitedUserBlockedUser = await db.query(
-        `SELECT id FROM user_blocked WHERE ? AND ?`,
-        [{ user_id_1: req.visitId }, { user_id_2: req.userId }]
-      )
+      const [
+        visitedUserBlockedUser,
+        userBlockedVisitedUser,
+      ] = await Promise.all([
+        db.query(`SELECT id FROM user_blocked WHERE ? AND ?`, [
+          { user_id_1: req.visitId },
+          { user_id_2: req.userId },
+        ]),
+        db.query(`SELECT id FROM user_blocked WHERE ? AND ?`, [
+          { user_id_1: req.userId },
+          { user_id_2: req.visitId },
+        ]),
+      ])
 
       if (visitedUserBlockedUser.length) {
         throw createError(400, 'api.profile userVisited blocked_you')
       }
 
-      const userBlockedVisitedUser = await db.query(
-        `SELECT id FROM user_blocked WHERE ? AND ?`,
-        [{ user_id_1: req.userId }, { user_id_2: req.visitId }]
-      )
-
       if (userBlockedVisitedUser.length) {
         throw createError(400, 'api.profile user user_is_blocked')
+      }
+    }
+
+    req.assertUser = () => {
+      if (!userId) {
+        throw createError(403, 'api.auth user is_not_set')
+      }
+    }
+
+    req.assertAuth = () => {
+      if (!req.token) {
+        throw createError(403, 'api.auth token is_not_provided')
       }
     }
   }

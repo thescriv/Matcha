@@ -26,7 +26,14 @@ function verify(token) {
   if (!token) {
     throw new Error('api.generateWT token is_null')
   }
-  const payload = jwt.verify(token, config.SECRET_KEY)
+
+  let payload
+
+  try {
+    payload = jwt.verify(token, config.SECRET_KEY)
+  } catch (err) {
+    throw new Error('api.generateWT token is_not_valid')
+  }
 
   if (!payload) {
     throw new Error('api.generateWT token content_is_null')
