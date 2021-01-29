@@ -1,12 +1,11 @@
-const db = require('../../src/lib/db')
+const db = require("../../src/lib/db")
 
-const { tables } = require('../../scripts/configTables')
+const { tables } = require("../../scripts/configTables")
 
 const deleteRows = async () => {
-  for (table of tables) {
-    await db.query(`DELETE FROM ${table.name}`)
-    await db.query(`ALTER TABLE ${table.name} AUTO_INCREMENT = 1`)
-  }
+  await Promise.all(
+    tables.map((table) => db.query(`DELETE FROM ${table.name}`))
+  )
 }
 
 module.exports = { deleteRows }

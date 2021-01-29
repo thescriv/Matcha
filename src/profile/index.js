@@ -27,7 +27,6 @@ routerProfile.get('/logout', async (_req, res) => {
 
     res.sendStatus(204)
   } catch (err) {
-    console.error(err.message)
     res.status(400).send({ error: err.message })
   }
 })

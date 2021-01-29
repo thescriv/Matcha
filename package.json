@@ -30,5 +30,8 @@
     "nodemailer": "^6.4.10",
     "nodemon": "^2.0.4",
     "superagent": "^5.3.1"
+  },
+  "devDependencies": {
+    "mysql2": "^2.2.5"
   }
 }

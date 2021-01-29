@@ -3,7 +3,7 @@ module.exports = {
     host: process.env.DB_HOST  || 'localhost',
     user: process.env.DB_USER || 'root' ,
     password: process.env.DB_PASSWORD || 'password',
-    connectionLimit: process.env.DB_CONNECTION_LIMIT || '100',
+    connectionLimit: process.env.DB_CONNECTION_LIMIT || '1000',
     port: process.env.DB_PORT || '3306',
   },
   TRANSPORTER_CONFIG: {

@@ -22,10 +22,6 @@ async function startApi(port) {
     console.log(`Listening on port: "${port}"`)
   })
 
-  app.use('/api', (_req, _res, next) => {
-    next()
-  })
-
   routers.forEach(({ path, router }) => {
     app.use(`/api/${path}`, router)
   })

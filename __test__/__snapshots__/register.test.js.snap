@@ -78,7 +78,7 @@ exports[`register -- POST /register do not register (bad password) 2`] = `Array 
 exports[`register -- POST /register do not register (email already exist) 1`] = `
 Object {
   "body": Object {
-    "error": "api.register  'user.email' already_exist",
+    "error": "api.register  'email' already_exist",
   },
   "status": 400,
 }
@@ -106,7 +106,7 @@ Array [
 exports[`register -- POST /register do not register (nickname already exist) 1`] = `
 Object {
   "body": Object {
-    "error": "api.register  'user.nickname' already_exist",
+    "error": "api.register  'nickname' already_exist",
   },
   "status": 400,
 }

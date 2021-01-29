@@ -4,10 +4,6 @@ const { login } = require('../login/controller')
 
 const routerLogin = express.Router()
 
-routerLogin.use('/', (req, res, next) => {
-  next()
-})
-
 routerLogin.post('/', async (req, res) => {
   const { body } = req
 
@@ -18,7 +14,6 @@ routerLogin.post('/', async (req, res) => {
 
     res.sendStatus(204)
   } catch (err) {
-    console.error(err.message)
     res.status(400).send({ error: err.message })
   }
 })

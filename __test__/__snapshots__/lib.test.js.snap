@@ -6,8 +6,6 @@ exports[`lib --  db --  faild to create table 1`] = `[Error: ERROR MYSQL]`;
 
 exports[`lib --  db --  failed to connect to database 1`] = `[Error: Error: ERROR MYSQL]`;
 
-exports[`lib --  getRandomToken -- do get a randomToken (token already exist) 1`] = `"0000000000000000000000000000000000000002"`;
-
 exports[`lib --  getRandomToken -- do get a randomToken 1`] = `"0000000000000000000000000000000000000001"`;
 
 exports[`lib --  jwt -- logout --  do logout 1`] = `"eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJhdXRoIjpbXSwibG9nZ2VkIjpmYWxzZSwiaWF0IjoxNTkxNTY0NDYxfQ.GjF42FOjyyfdhCTx8C-QTawgvHow4hlvlOBW6MBml9s"`;

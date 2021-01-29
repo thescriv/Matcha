@@ -1,14 +1,10 @@
-const express = require('express')
+const express = require("express")
 
-const { register, verifyEmail } = require('./controller')
+const { register, verifyEmail } = require("./controller")
 
 const routerRegister = express.Router()
 
-routerRegister.use('/', (req, res, next) => {
-  next()
-})
-
-routerRegister.post('/', async (req, res) => {
+routerRegister.post("/", async (req, res) => {
   const { body } = req
 
   try {
@@ -16,12 +12,11 @@ routerRegister.post('/', async (req, res) => {
 
     res.sendStatus(204)
   } catch (err) {
-    console.error(err.message)
     res.status(400).send({ error: err.message })
   }
 })
 
-routerRegister.get('/verify-email/:id', async (req, res) => {
+routerRegister.get("/verify-email/:id", async (req, res) => {
   const { id } = req.params
 
   try {
@@ -29,7 +24,6 @@ routerRegister.get('/verify-email/:id', async (req, res) => {
 
     res.sendStatus(204)
   } catch (err) {
-    console.error(err.message)
     res.status(400).send({ error: err.message })
   }
 })

@@ -156,7 +156,7 @@ describe(`profile -- `, () => {
     })
   })
 
-  describe('GET /profile/me', () => {
+  describe.only('GET /profile/me', () => {
     test('do get me', async () => {
       const { body, status } = await superagent
         .get(`${baseUrl}/profile/me`)
