@@ -11,7 +11,7 @@ async function sendResetPassword(body) {
 
   const { email } = body
 
-  const user = await db.query(`SELECT id FROM user WHERE ?`, [{ email }])
+  const [user] = await db.query(`SELECT id FROM user WHERE ?`, [{ email }])
 
   if (!user.length) {
     throw new Error('api.resetPassword user does_not_exist')
@@ -46,7 +46,7 @@ async function updatePassword(body, tokenId) {
 
   const { password } = body
 
-  const user = await db.query(
+  const [user] = await db.query(
     `SELECT user.id FROM password_reset_token INNER JOIN user ON password_reset_token.user_id = user.id WHERE token = ${tokenId}`
   )
 

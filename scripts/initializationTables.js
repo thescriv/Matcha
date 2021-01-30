@@ -1,24 +1,21 @@
-const db = require('../src/lib/db')
-const { tables } = require('./configTables')
+const db = require("../src/lib/db")
+const { tables } = require("./configTables")
 
 const initializationTables = async () => {
-  const tableChecker = []
-
-  for (const table of tables) {
+  const initTable = async (table) => {
     try {
       await db.query(
         `CREATE TABLE IF NOT EXISTS ${table.name} ( ${table.columns} )`
       )
-
-      tableChecker.push(`${table.name} OK`)
+      
     } catch (err) {
-      tableChecker.push(`${table.name} FAILED [${err.message}]`)
-      console.log(tableChecker.join('\n'))
-      throw new Error(err.message)
+      throw new Error(`an error occured ${err?.message || err}: ${table.name} FAILED`)
     }
   }
 
-  console.log(tableChecker.join('\n'))
+  await Promise.all(tables.map((table) => initTable(table)))
+
+  console.log(`All tables were created with no problem !`)
 }
 
 module.exports = { initializationTables }

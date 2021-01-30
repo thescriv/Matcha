@@ -2,7 +2,7 @@
 
 exports[`lib --  db --  db query fail 1`] = `[Error: ERROR MYSQL]`;
 
-exports[`lib --  db --  faild to create table 1`] = `[Error: ERROR MYSQL]`;
+exports[`lib --  db --  faild to create table 1`] = `[Error: an error occured ERROR MYSQL: user FAILED]`;
 
 exports[`lib --  db --  failed to connect to database 1`] = `[Error: Error: ERROR MYSQL]`;
 

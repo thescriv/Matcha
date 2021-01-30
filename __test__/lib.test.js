@@ -196,7 +196,7 @@ describe("lib -- ", () => {
     })
   })
 
-  describe.only("getRandomToken --", () => {
+  describe("getRandomToken --", () => {
     beforeAll(async () => {
       const port = getRandomPort()
 

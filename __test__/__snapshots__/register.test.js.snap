@@ -34,7 +34,7 @@ Object {
 
 exports[`register -- GET /register/verify-email/:id do verifyEmail 2`] = `
 Array [
-  RowDataPacket {
+  TextRow {
     "bio": null,
     "completed": 0,
     "email": "test@test.test",
@@ -86,7 +86,7 @@ Object {
 
 exports[`register -- POST /register do not register (email already exist) 2`] = `
 Array [
-  RowDataPacket {
+  TextRow {
     "bio": null,
     "completed": 0,
     "email": "test@test.test",
@@ -114,7 +114,7 @@ Object {
 
 exports[`register -- POST /register do not register (nickname already exist) 2`] = `
 Array [
-  RowDataPacket {
+  TextRow {
     "bio": null,
     "completed": 0,
     "email": "test@test1.test",
@@ -215,7 +215,7 @@ Object {
 
 exports[`register -- POST /register do register 2`] = `
 Array [
-  RowDataPacket {
+  TextRow {
     "bio": null,
     "completed": 0,
     "email": "test@test.test",
@@ -234,7 +234,7 @@ Array [
 
 exports[`register -- POST /register do register 3`] = `
 Array [
-  RowDataPacket {
+  TextRow {
     "creation_date": 1000000000000,
     "id": 1,
     "token": "0000000000000000000000000000000000000001",

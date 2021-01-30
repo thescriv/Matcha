@@ -23,20 +23,24 @@ async function authMiddleware(req, _res, next) {
 
   const authHeader = req.headers.authorization
 
+  console.log(authHeader)
+
   if (authHeader) {
     const token = authHeader.split(' ')[1]
 
     try {
       req.token = jwt.verify(token)
+      console.log(req.token)
     } catch (err) {
       throw createError(400, err.message)
     }
 
     if (!req.token.user_id || !req.token.logged) {
+      console.log('unkown')
       throw createError(401, 'api.auth token unknow_token')
     }
 
-    const userExist = await db.query('SELECT id FROM user WHERE ?', [
+    const [userExist] = await db.query('SELECT id FROM user WHERE ?', [
       { id: req.token.user_id },
     ])
 
@@ -53,7 +57,7 @@ async function authMiddleware(req, _res, next) {
         throw createError(500, 'illegal action')
       }
 
-      const visitUserExist = await db.query('SELECT id FROM user WHERE ?', [
+      const [visitUserExist] = await db.query('SELECT id FROM user WHERE ?', [
         { id: req.visitId },
       ])
 
@@ -62,8 +66,8 @@ async function authMiddleware(req, _res, next) {
       }
 
       const [
-        visitedUserBlockedUser,
-        userBlockedVisitedUser,
+        [visitedUserBlockedUser],
+        [userBlockedVisitedUser],
       ] = await Promise.all([
         db.query(`SELECT id FROM user_blocked WHERE ? AND ?`, [
           { user_id_1: req.visitId },

@@ -20,7 +20,7 @@ async function register(body) {
   let userId
 
   try {
-    const { insertId } = await db.query(
+    const [{insertId}] = await db.query(
       `INSERT INTO user (nickname, firstname, lastname, email, password) 
       VALUES (?, ?, ?, ?, ?)`,
       [nickname, firstname, lastname, email, hashPassowrd]
@@ -61,7 +61,7 @@ async function register(body) {
 }
 
 async function verifyEmail(tokenId) {
-  const checkToken = await db.query(
+  const [checkToken] = await db.query(
     `SELECT user_id FROM register_token WHERE ?`,
     [{ token: tokenId }]
   )

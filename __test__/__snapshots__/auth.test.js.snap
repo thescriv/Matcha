@@ -1,0 +1,8 @@
+// Jest Snapshot v1, https://goo.gl/fbAQLP
+
+exports[`auth --  do not auth (no token) 1`] = `
+Object {
+  "body": Object {},
+  "status": 404,
+}
+`;

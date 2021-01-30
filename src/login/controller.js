@@ -15,7 +15,7 @@ async function login(body) {
     .update(password)
     .digest('hex')
 
-  const user = await db.query(`SELECT ? from user WHERE ? AND ?`, [
+  const [user] = await db.query(`SELECT ? from user WHERE ? AND ?`, [
     'id',
     { nickname: nickname },
     { password: hashPassowrd },

@@ -1,15 +1,15 @@
-const crypto = require('crypto')
-const superagent = require('superagent')
-const webToken = require('jsonwebtoken')
-const dotenv = require('dotenv')
+const crypto = require("crypto")
+const superagent = require("superagent")
+const webToken = require("jsonwebtoken")
+const dotenv = require("dotenv")
 
-const db = require('../src/lib/db')
-const jwt = require('../src/lib/webToken')
+const db = require("../src/lib/db")
+const jwt = require("../src/lib/webToken")
 
-const { script } = require('../scripts/script')
-const { deleteRows } = require('./utils/deleteRows')
-const { getRandomPort } = require('./utils/getRandomPort')
-const { startApi, stopApi } = require('../api')
+const { script } = require("../scripts/script")
+const { deleteRows } = require("./utils/deleteRows")
+const { getRandomPort } = require("./utils/getRandomPort")
+const { startApi, stopApi } = require("../api")
 
 let baseUrl
 
@@ -17,13 +17,11 @@ describe(`login -- `, () => {
   beforeAll(async () => {
     const port = getRandomPort()
 
-    dotenv.config({ path: '../.env' })
+    dotenv.config({ path: "../.env" })
 
     baseUrl = `http://localhost:${port}/api`
 
-    await script('matchaTest')
-
-    await deleteRows()
+    await script("matchaTest")
 
     await startApi(port)
   })
@@ -38,34 +36,34 @@ describe(`login -- `, () => {
     await stopApi()
   })
 
-  describe('POST /login', () => {
-    beforeEach(async () => {
-      const hashPassword = crypto
-        .createHash('md5')
-        .update('testTest1')
-        .digest('hex')
+  describe("POST /login", () => {
+    const hashPassword = crypto
+      .createHash("md5")
+      .update("testTest1")
+      .digest("hex")
 
+    beforeEach(async () => {
       await db.query(
         `INSERT INTO user (nickname, password) VALUES ("thescriv1", "${hashPassword}")`
       )
     })
 
-    test('do login', async () => {
+    test("do login", async () => {
       const { body, status } = await superagent.post(`${baseUrl}/login`).send({
-        nickname: 'thescriv1',
-        password: 'testTest1',
+        nickname: "thescriv1",
+        password: "testTest1",
       })
 
       expect({ body, status }).toMatchSnapshot()
     })
 
-    test('do not login (nickname is null)', async () => {
+    test("do not login (nickname is null)", async () => {
       let error
 
       try {
         await superagent.post(`${baseUrl}/login`).send({
           nickname: null,
-          password: 'testTest1',
+          password: "testTest1",
         })
       } catch (err) {
         error = err
@@ -76,12 +74,12 @@ describe(`login -- `, () => {
       expect({ body, status }).toMatchSnapshot()
     })
 
-    test('do not login (password is null)', async () => {
+    test("do not login (password is null)", async () => {
       let error
 
       try {
         await superagent.post(`${baseUrl}/login`).send({
-          nickname: 'thescriv1',
+          nickname: "thescriv1",
           password: null,
         })
       } catch (err) {
@@ -93,13 +91,13 @@ describe(`login -- `, () => {
       expect({ body, status }).toMatchSnapshot()
     })
 
-    test('do not login (password is wrong)', async () => {
+    test("do not login (password is wrong)", async () => {
       let error
 
       try {
         await superagent.post(`${baseUrl}/login`).send({
-          nickname: 'thescriv1',
-          password: 'test',
+          nickname: "thescriv1",
+          password: "test",
         })
       } catch (err) {
         error = err
@@ -110,13 +108,13 @@ describe(`login -- `, () => {
       expect({ body, status }).toMatchSnapshot()
     })
 
-    test('do not login (user does not exist)', async () => {
+    test("do not login (user does not exist)", async () => {
       let error
 
       try {
         await superagent.post(`${baseUrl}/login`).send({
-          nickname: 'thescriv',
-          password: 'testTest1',
+          nickname: "thescriv",
+          password: "testTest1",
         })
       } catch (err) {
         error = err
@@ -127,15 +125,15 @@ describe(`login -- `, () => {
       expect({ body, status }).toMatchSnapshot()
     })
 
-    test('do not login (failed to create token)', async () => {
-      jest.spyOn(jwt, 'generate').mockReturnValue(false)
+    test("do not login (failed to create token)", async () => {
+      jest.spyOn(jwt, "generate").mockReturnValue(false)
 
       let error
 
       try {
         await superagent.post(`${baseUrl}/login`).send({
-          nickname: 'thescriv1',
-          password: 'testTest1',
+          nickname: "thescriv1",
+          password: "testTest1",
         })
       } catch (err) {
         error = err
@@ -146,15 +144,15 @@ describe(`login -- `, () => {
       expect({ body, status }).toMatchSnapshot()
     })
 
-    test('do not login (token fail to sign)', async () => {
-      jest.spyOn(webToken, 'sign').mockReturnValue(false)
+    test("do not login (token fail to sign)", async () => {
+      jest.spyOn(webToken, "sign").mockReturnValue(false)
 
       let error
 
       try {
         await superagent.post(`${baseUrl}/login`).send({
-          nickname: 'thescriv1',
-          password: 'testTest1',
+          nickname: "thescriv1",
+          password: "testTest1",
         })
       } catch (err) {
         error = err

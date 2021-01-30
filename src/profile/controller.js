@@ -10,7 +10,9 @@ async function getProfile(req, res) {
     auth: { userId },
   } = req
 
-  const user = await db.query(`SELECT * FROM user WHERE ?`, [{ id: userId }])
+  console.log(userId)
+
+  const [user] = await db.query(`SELECT * FROM user WHERE ?`, [{ id: userId }])
 
   console.log(user)
 
@@ -45,7 +47,7 @@ async function updateProfile(req, res) {
 async function getVisitedUser(req, res) {
   const { auth: userId } = req
 
-  const visitedUser = await db.query(
+  const [visitedUser] = await db.query(
     'SELECT user.nickname from user INNER JOIN user_visit ON user.id = user_visit.user_id_1 WHERE ? LIMIT 5',
     [{ 'user_visit.user_id_2': userId }]
   )
@@ -56,7 +58,7 @@ async function getVisitedUser(req, res) {
 async function getLikedUser(req, res) {
   const { auth: userId } = req
 
-  const likedUser = await db.query(
+  const [likedUser] = await db.query(
     'SELECT user.nickname from user INNER JOIN user_like ON user.id = user_visit.user_id_1 WHERE ? LIMIT 5',
     [{ 'user_visit.user_id_2': userId }]
   )
@@ -69,7 +71,7 @@ async function visitProfile(req, res) {
 
   const { visitId } = auth
 
-  const userVisited = await db.query(`SELECT * FROM user WHERE ?`, [
+  const [userVisited] = await db.query(`SELECT * FROM user WHERE ?`, [
     { id: visitId },
   ])
 
@@ -81,7 +83,7 @@ async function likeProfile(req, res) {
 
   const { userId, visitId } = auth
 
-  const [matchExist, userAlreadyLiked] = await Promise.all([
+  const [[matchExist], [userAlreadyLiked]] = await Promise.all([
     db.query('SELECT id FROM user_match WHERE (? OR ?) AND (? OR ?)', [
       { user_id_1: userId },
       { user_id_2: userId },
@@ -101,7 +103,7 @@ async function likeProfile(req, res) {
     )
   }
 
-  const mutualLike = await db.query('SELECT id FROM user_like WHERE ? AND ?', [
+  const [mutualLike] = await db.query('SELECT id FROM user_like WHERE ? AND ?', [
     { user_id_2: userId },
     { user_id_1: visitId },
   ])
@@ -132,7 +134,7 @@ async function blockProfile(req, res) {
   const { auth } = req
 
   const { userId, visitId } = auth
-  const alreadyBlocked = await db.query(
+  const [alreadyBlocked] = await db.query(
     'SELECT id FROM user_blocked WHERE ? AND ?',
     [{ user_id_1: userId }, { user_id_2: visitId }]
   )
