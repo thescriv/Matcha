@@ -192,12 +192,12 @@ Object {
 exports[`profile --  GET /profile/me do get me 1`] = `
 Object {
   "body": Object {
-    "profileInfo": Object {
-      "bio": null,
+    "user": Object {
+      "bio": "",
       "completed": 0,
       "email": "test@test.test",
       "firstname": "theo",
-      "gender_id": null,
+      "gender_id": 1,
       "id": 1,
       "lastname": "test",
       "nickname": "thescriv",
@@ -257,12 +257,12 @@ Object {
 
 exports[`profile --  POST /profile/update do update profile (password modified) 2`] = `
 Array [
-  RowDataPacket {
-    "bio": null,
+  TextRow {
+    "bio": "",
     "completed": 0,
     "email": "test@test.test",
     "firstname": "theo",
-    "gender_id": null,
+    "gender_id": 1,
     "id": 1,
     "lastname": "test",
     "nickname": "thescriv",
@@ -283,12 +283,12 @@ Object {
 
 exports[`profile --  POST /profile/update do update profile 2`] = `
 Array [
-  RowDataPacket {
-    "bio": null,
+  TextRow {
+    "bio": "",
     "completed": 0,
     "email": "test@test.test",
     "firstname": "theo",
-    "gender_id": null,
+    "gender_id": 1,
     "id": 1,
     "lastname": "test",
     "nickname": "thescriv",
@@ -298,47 +298,4 @@ Array [
     "verified": 0,
   },
 ]
-`;
-
-exports[`profile --  auth do not auth (no logged in token) 1`] = `
-Object {
-  "body": Object {
-    "error": "api.generateWT token user_is_not_logged",
-  },
-  "status": 400,
-}
-`;
-
-exports[`profile --  auth do not auth (no token) 1`] = `
-Object {
-  "body": Object {},
-  "status": 401,
-}
-`;
-
-exports[`profile --  auth do not auth (no user_id in token) 1`] = `
-Object {
-  "body": Object {
-    "err": "auth token unknow_token",
-  },
-  "status": 401,
-}
-`;
-
-exports[`profile --  auth do not auth (token cannot be verified) 1`] = `
-Object {
-  "body": Object {
-    "error": "api.generateWT token cannot_be_verified",
-  },
-  "status": 400,
-}
-`;
-
-exports[`profile --  auth do not auth (user is not logged) 1`] = `
-Object {
-  "body": Object {
-    "error": "api.generateWT token user_is_not_logged",
-  },
-  "status": 400,
-}
 `;

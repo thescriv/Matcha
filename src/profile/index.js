@@ -1,6 +1,6 @@
-const express = require('express')
+const express = require("express")
 
-const jwt = require('../lib/webToken')
+const jwt = require("../lib/webToken")
 
 const {
   getProfile,
@@ -10,20 +10,21 @@ const {
   blockProfile,
   flagProfile,
   getVisitedUser,
-  getLikedUser
-} = require('./controller')
+  getLikedUser,
+} = require("./controller")
 
 const routerProfile = express.Router()
 
-routerProfile.get('/me', getProfile)
+routerProfile.get("/me", getProfile)
 
-routerProfile.post('/update', updateProfile)
+routerProfile.post("/update", updateProfile)
 
-routerProfile.get('/logout', async (_req, res) => {
+routerProfile.get("/logout", async (req, res) => {
+  const { userId } = req.auth
   try {
     const token = await jwt.logout(userId)
 
-    res.header('Authorization', `Bearer ${token}`)
+    res.header("Authorization", `Bearer ${token}`)
 
     res.sendStatus(204)
   } catch (err) {
@@ -31,14 +32,13 @@ routerProfile.get('/logout', async (_req, res) => {
   }
 })
 
-routerProfile.get('/visited_user', getVisitedUser)
+routerProfile.get("/visited_user", getVisitedUser)
 
-routerProfile.get('/liked_user', getLikedUser)
+routerProfile.get("/liked_user", getLikedUser)
 
-
-routerProfile.post('/:visit_id', visitProfile)
-routerProfile.post('/:visit_id/like', likeProfile)
-routerProfile.post('/:visit_id/block', blockProfile)
-routerProfile.post('/:visit_id/flag', flagProfile)
+routerProfile.post("/:visit_id", visitProfile)
+routerProfile.post("/:visit_id/like", likeProfile)
+routerProfile.post("/:visit_id/block", blockProfile)
+routerProfile.post("/:visit_id/flag", flagProfile)
 
 module.exports = { routerProfile }

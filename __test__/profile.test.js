@@ -19,9 +19,9 @@ describe(`profile -- `, () => {
   beforeAll(async () => {
     const port = getRandomPort()
 
-    baseUrl = `http://localhost:${port}/api`
+    console.log(port)
 
-    await script("matchaTest")
+    baseUrl = `http://localhost:${port}/api`
 
     await startApi(port)
   })
@@ -29,21 +29,19 @@ describe(`profile -- `, () => {
   beforeEach(async () => {
     console.log("hello")
 
-    const [{ insertId }] = await db.query(
+    await deleteRows()
+
+    const insertId = await db.query(
       `INSERT INTO user (nickname, firstname, lastname, email, password, bio, gender_id) 
               VALUES ("thescriv", "theo", "test", "test@test.test", "abc", "", 1)`
     )
 
-    console.log(insertedUser)
-
-    userId = insertId
+    userId = insertId[0].insertId
 
     token = jwt.generate(userId)
   })
 
   afterEach(async () => {
-    await deleteRows()
-
     jest.restoreAllMocks()
   })
 
@@ -51,8 +49,8 @@ describe(`profile -- `, () => {
     await stopApi()
   })
 
-  describe.only("GET /profile/me", () => {
-    test.only("do get me", async () => {
+  describe("GET /profile/me", () => {
+    test("do get me", async () => {
       const { body, status } = await superagent
         .get(`${baseUrl}/profile/me`)
         .set("Authorization", `Bearer ${token}`)
@@ -61,7 +59,7 @@ describe(`profile -- `, () => {
     })
 
     test("do not get me (user does not exist)", async () => {
-      const tokenWithUnknownUser = jwt.generate("99")
+      const tokenWithUnknownUser = jwt.generate("0")
 
       let error
 
@@ -155,7 +153,7 @@ describe(`profile -- `, () => {
     })
   })
 
-  describe(":visit_id", () => {
+  describe.only(":visit_id", () => {
     let visitId
 
     beforeEach(async () => {

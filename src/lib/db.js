@@ -14,10 +14,13 @@ const disconnect = () => {
 
 const query = async (query, queryOptions = []) => {
   try {
-    await poolPromise.query("USE matchaTest")
     return await poolPromise.query(query, queryOptions)
   } catch (err) {
-    console.error(err)
+    console.log('an error has occured, terminating connection with db...')
+    
+    disconnect()
+
+    throw new Error(err)
   }
 
   return

@@ -57,14 +57,6 @@ const tables = [
     ],
   },
   {
-    name: 'picture',
-    columns: [
-      'id INT PRIMARY KEY NOT NULL AUTO_INCREMENT',
-      'user_id INT NOT NULL',
-      'content BLOB NOT NULL',
-    ]
-  },
-  {
     name: 'user_like',
     columns: [
       'id INT PRIMARY KEY NOT NULL AUTO_INCREMENT',

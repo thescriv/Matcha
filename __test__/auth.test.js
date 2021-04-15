@@ -48,8 +48,6 @@ describe(`auth -- `, () => {
   })
 
   test.only("do not auth (token cannot be verified)", async () => {
-    console.log("hello")
-
     jest.spyOn(jwt, "verify").mockImplementation(() => {
       throw new Error("api.generateWT token cannot_be_verified")
     })
@@ -65,8 +63,6 @@ describe(`auth -- `, () => {
     } catch (err) {
       error = err
     }
-
-    console.log("hello")
 
     const { body, status } = error.response
 

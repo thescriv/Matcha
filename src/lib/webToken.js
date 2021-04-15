@@ -8,7 +8,7 @@ function generate(id) {
   }
 
   const token = jwt.sign(
-    { auth: ['user'], user_id: id, logged: true },
+    { roles: ['user'], user_id: id, logged: true },
     config.SECRET_KEY,
     {
       expiresIn: '1h',
