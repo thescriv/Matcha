@@ -2,22 +2,7 @@
 
 exports[`profile --  :visit_id POST /profile/:visit_id do visit 1`] = `
 Object {
-  "body": Object {
-    "profileInfo": Object {
-      "bio": null,
-      "completed": 0,
-      "email": "glb@test.test",
-      "firstname": "guilhem",
-      "gender_id": null,
-      "id": 2,
-      "lastname": "test",
-      "nickname": "gdelabro",
-      "orientation_id": 1,
-      "password": "abc",
-      "score": 100,
-      "verified": 0,
-    },
-  },
+  "body": Object {},
   "status": 200,
 }
 `;

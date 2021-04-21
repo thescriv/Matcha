@@ -15,11 +15,12 @@ async function login(body) {
     .update(password)
     .digest('hex')
 
-  const [user] = await db.query(`SELECT ? from user WHERE ? AND ?`, [
-    'id',
+  const [user] = await db.query(`SELECT id from user WHERE ? AND ?`, [
     { nickname: nickname },
     { password: hashPassowrd },
   ])
+
+  console.log(user)
 
   if (!user.length) {
     throw new Error(`api.login user does_not_exist`)

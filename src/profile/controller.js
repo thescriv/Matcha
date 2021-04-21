@@ -6,14 +6,14 @@ const db = require("../lib/db")
 const { validationUpdateProfile } = require("./schema")
 
 async function getProfile(req, res) {
-  const { auth } = req
+  const {
+    auth: { userId },
+  } = req
 
-  console.log(auth)
-
-  console.log(auth.userId)
+  console.log(userId)
 
   const [[user]] = await db.query(`SELECT * FROM user WHERE ?`, [
-    { id: auth.userId },
+    { id: userId },
   ])
 
   console.log(user)
@@ -53,7 +53,7 @@ async function updateProfile(req, res) {
 async function getVisitedUser(req, res) {
   const { auth } = req
 
-  auth.assertUser()
+  // auth.assertUser()
 
   const [
     visitedUser,
@@ -68,7 +68,7 @@ async function getVisitedUser(req, res) {
 async function getLikedUser(req, res) {
   const { auth } = req
 
-  auth.assertUser()
+  // auth.assertUser()
 
   const [
     likedUser,
@@ -83,7 +83,7 @@ async function getLikedUser(req, res) {
 async function visitProfile(req, res) {
   const { auth } = req
 
-  auth.assertUser()
+  // auth.assertUser()
 
   const [userVisited] = await db.query(`SELECT * FROM user WHERE ?`, [
     { id: auth.visitId },
@@ -97,7 +97,23 @@ async function likeProfile(req, res) {
 
   const { userId, visitId } = auth
 
-  const [[matchExist], [userAlreadyLiked]] = await Promise.all([
+  const [
+    [matchExist],
+  ] = await db.query("SELECT id FROM user_match WHERE (? OR ?) AND (? OR ?)", [
+    { user_id_1: userId },
+    { user_id_2: userId },
+    { user_id_2: visitId },
+    { user_id_1: visitId },
+  ])
+
+  const [
+    [userAlreadyLiked],
+  ] = await db.query("SELECT id FROM user_like WHERE ? AND ?", [
+    { user_id_1: userId },
+    { user_id_2: visitId },
+  ])
+
+  /* const [[matchExist], [userAlreadyLiked]] = await Promise.all([
     db.query("SELECT id FROM user_match WHERE (? OR ?) AND (? OR ?)", [
       { user_id_1: userId },
       { user_id_2: userId },
@@ -108,21 +124,21 @@ async function likeProfile(req, res) {
       { user_id_1: userId },
       { user_id_2: visitId },
     ]),
-  ])
+  ]) */
 
-  if (matchExist.length || userAlreadyLiked.length) {
+  if (matchExist || userAlreadyLiked) {
     throw createError(
       400,
-      `api.profile like user_already_${matchExist.length ? "matched" : "liked"}`
+      `api.profile like user_already_${matchExist ? "matched" : "liked"}`
     )
   }
 
-  const [mutualLike] = await db.query(
+  const [[mutualLike]] = await db.query(
     "SELECT id FROM user_like WHERE ? AND ?",
     [{ user_id_2: userId }, { user_id_1: visitId }]
   )
 
-  if (mutualLike.length) {
+  if (mutualLike) {
     await db.query(
       "INSERT INTO user_match (user_id_1, user_id_2) VALUES(?, ?)",
       [userId, visitId]

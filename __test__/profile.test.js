@@ -64,9 +64,11 @@ describe(`profile -- `, () => {
       let error
 
       try {
-        await superagent
+        const { body: body1, status: status1 } = await superagent
           .get(`${baseUrl}/profile/me`)
           .set("Authorization", `Bearer ${tokenWithUnknownUser}`)
+
+        console.log({ body1, status1 })
       } catch (err) {
         error = err
       }
@@ -153,16 +155,20 @@ describe(`profile -- `, () => {
     })
   })
 
-  describe.only(":visit_id", () => {
+  describe(":visit_id", () => {
     let visitId
 
     beforeEach(async () => {
-      const { insertId } = await db.query(
+      const [visiter] = await db.query(
         `INSERT INTO user (nickname, firstname, lastname, email, password) 
               VALUES ("gdelabro", "guilhem", "test", "glb@test.test", "abc")`
       )
 
-      visitId = insertId
+      console.log(visiter)
+
+      visitId = visiter.insertId
+
+      console.log(visitId)
     })
 
     test("do not visit (user does not exist)", async () => {
@@ -229,7 +235,7 @@ describe(`profile -- `, () => {
     })
 
     describe("POST /profile/:visit_id/like", () => {
-      test("do like", async () => {
+      test.only("do like", async () => {
         const { body, status } = await superagent
           .post(`${baseUrl}/profile/${visitId}/like`)
           .set("Authorization", `Bearer ${token}`)

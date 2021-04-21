@@ -4,6 +4,7 @@ const cookieParser = require("cookie-parser")
 const cors = require("cors")
 
 const { authMiddleware } = require("./middleware/auth")
+const { errorHandling } = require("./middleware/errors")
 
 const routers = require("./routers")
 const { script } = require("./scripts/script")
@@ -17,17 +18,18 @@ async function startApi(port) {
 
   const app = express()
 
-  server = app.listen(port, () => {
-    console.log(`Listening on port: "${port}"`)
-  })
-
   app.use(bodyParser.json())
   app.use(cookieParser())
   app.use(cors())
+  app.use(errorHandling)
   app.use(authMiddleware)
 
-  routers.forEach(({ path, router }) => {
+  for (const { path, router } of routers) {
     app.use(`/api/${path}`, router)
+  }
+
+  server = app.listen(port, () => {
+    console.log(`Listening on port: "${port}"`)
   })
 }
 

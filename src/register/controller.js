@@ -38,26 +38,36 @@ async function register(body) {
 
   const token = await getRandomToken('register_token')
 
-  const mailConfig = {
-    from: config.EMAIL_MATCHA,
-    to: email,
-    subject: 'Matcha - Email Verification',
-    text: `Click on the link below to verify your email: ${config.API_URL}/api/register/verify-email/${token}`,
-    html: `<h3>Click on the link below to verify your email:</h3> <a href="http://${config.API_URL}/verify-email/${token}"><button>Verify</button></a>`,
-  }
+  const registrationUrl = `${config.API_URL}/register/verify-email/${token}`
 
-  const emailRet = await transporter.sendMail(mailConfig)
+  console.log(registrationUrl)
 
-  if (!emailRet) {
-    await db.query(`DELETE FROM user WHERE ?`, [{ id: userId }])
-
-    throw new Error('api.register sendMail failed')
+  if (config.NODE_ENV === 'test') {
+    console.log(registrationUrl)
+  } else {
+    const mailConfig = {
+      from: config.EMAIL_MATCHA,
+      to: email,
+      subject: 'Matcha - Email Verification',
+      text: `Click on the link below to verify your email: ${registrationUrl}`,
+      html: `<h3>Click on the link below to verify your email:</h3> <a href="${registrationUrl}"><button>Verify</button></a>`,
+    }
+  
+    const emailRet = await transporter.sendMail(mailConfig)
+  
+    if (!emailRet) {
+      await db.query(`DELETE FROM user WHERE ?`, [{ id: userId }])
+  
+      throw new Error('api.register sendMail failed')
+    }
   }
 
   await db.query(
     `INSERT INTO register_token (user_id, token, creation_date) VALUES (?, ?, ?)`,
     [userId, token, Date.now()]
   )
+
+  return token
 }
 
 async function verifyEmail(tokenId) {

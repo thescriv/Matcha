@@ -2,7 +2,7 @@ const createError = require("http-errors")
 
 const jwt = require("../src/lib/webToken")
 
-function authMiddleware(req, res, next) {
+async function authMiddleware(req, res, next) {
   req.auth = {
     userId: null,
     visitId: null,
@@ -36,6 +36,8 @@ function authMiddleware(req, res, next) {
 
     req.auth.userId = parseInt(req.auth.token.user_id)
 
+    console.log(req.params)
+
     if (req.params && req.params.visit_id) {
       req.auth.visitId = parseInt(visit_id)
 
@@ -45,12 +47,7 @@ function authMiddleware(req, res, next) {
     }
   }
 
-  try {
-    next()
-  } catch (err) {
-    console.error(err)
-    res.status(400).send({ error: err.message })
-  }
+  await next()
 }
 
 module.exports = { authMiddleware }

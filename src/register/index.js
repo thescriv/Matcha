@@ -8,9 +8,9 @@ routerRegister.post("/", async (req, res) => {
   const { body } = req
 
   try {
-    await register(body)
+    const token = await register(body)
 
-    res.sendStatus(204)
+    res.status(200).send(token)
   } catch (err) {
     res.status(400).send({ error: err.message })
   }

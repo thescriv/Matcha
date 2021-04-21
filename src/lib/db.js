@@ -16,25 +16,12 @@ const query = async (query, queryOptions = []) => {
   try {
     return await poolPromise.query(query, queryOptions)
   } catch (err) {
-    console.log('an error has occured, terminating connection with db...')
-    
-    disconnect()
+    console.log("an sql error occured.")
+
+    //disconnect()
 
     throw new Error(err)
   }
-
-  return
-
-  /*   new Promise((resolve, reject) => {
-    pool.query(query, queryOptions, (err, rows) => {
-      if (err) {
-        console.log(err?.sqlMessage || 'an sql error occured')
-        reject(err)
-      } else {
-        resolve(rows)
-      }
-    })
-  }) */
 }
 
 module.exports = { query, disconnect }
